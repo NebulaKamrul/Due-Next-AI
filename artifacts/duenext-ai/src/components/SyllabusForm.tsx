@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { ArrowRight, X, File as FileIcon } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { ArrowRight, Upload, X, File as FileIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -14,13 +14,11 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
   const [text, setText] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [isProcessingPdf, setIsProcessingPdf] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processPdf = useCallback(async (file: File) => {
     if (file.type !== "application/pdf") {
       toast({
         title: "Invalid file type",
@@ -32,7 +30,7 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
 
     setIsProcessingPdf(true);
     setFileName(file.name);
-    
+
     try {
       const extractedText = await extractTextFromPDF(file);
       if (!extractedText.trim()) {
@@ -57,7 +55,29 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
         fileInputRef.current.value = "";
       }
     }
+  }, [toast]);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processPdf(file);
   };
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) processPdf(file);
+  }, [processPdf]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
 
   const clearFile = () => {
     setFileName(null);
@@ -70,70 +90,87 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
   };
 
   return (
-    <div className="flex flex-col border border-border rounded-md bg-background overflow-hidden">
-      <div className="relative">
-        <Textarea
-          placeholder="Paste syllabus text here..."
-          className="min-h-[320px] w-full resize-none border-0 p-6 text-base bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/50 rounded-none shadow-none"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
+        {/* Textarea */}
+        <div className="relative border border-border rounded-md bg-background overflow-hidden">
+          <Textarea
+            placeholder="Paste syllabus text here..."
+            className="min-h-[200px] w-full resize-none border-0 p-5 text-base bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/50 rounded-none shadow-none"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            disabled={isPending || isProcessingPdf}
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-xs text-muted-foreground uppercase tracking-widest">or</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        {/* Drop zone */}
+        <input
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleFileChange}
           disabled={isPending || isProcessingPdf}
         />
-        
-        {/* PDF Overlay indicator */}
-        {fileName && (
-          <div className="absolute top-4 left-4 right-4 bg-muted/50 border border-border rounded p-3 flex items-center justify-between">
+
+        {fileName ? (
+          <div className="border border-border rounded-md bg-muted/30 p-4 flex items-center justify-between">
             <div className="flex items-center gap-3 overflow-hidden">
               <FileIcon className="w-4 h-4 text-muted-foreground shrink-0" />
-              <div className="truncate">
-                <p className="text-sm font-medium text-foreground truncate">{fileName}</p>
-              </div>
+              <p className="text-sm font-medium text-foreground truncate">{fileName}</p>
             </div>
-            <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" onClick={clearFile} disabled={isPending}>
-              <X className="w-3 h-3" />
+            <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={clearFile} disabled={isPending}>
+              <X className="w-3.5 h-3.5" />
             </Button>
+          </div>
+        ) : (
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => fileInputRef.current?.click()}
+            className={`
+              border-2 border-dashed rounded-md p-8 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors
+              ${isDragging
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-muted-foreground/40 hover:bg-muted/20"
+              }
+              ${(isPending || isProcessingPdf) ? "opacity-50 pointer-events-none" : ""}
+            `}
+          >
+            <Upload className="w-5 h-5 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
+              {isProcessingPdf ? "Reading PDF..." : "Drop a PDF here or click to browse"}
+            </p>
           </div>
         )}
       </div>
 
-      <div className="bg-muted/20 border-t border-border p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <input
-            type="file"
-            accept="application/pdf"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            disabled={isPending || isProcessingPdf}
-          />
-          <Button
-            variant="ghost"
-            className="text-muted-foreground hover:text-foreground font-normal px-2 w-full sm:w-auto"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isPending || isProcessingPdf}
-          >
-            {isProcessingPdf ? "Reading PDF..." : "Upload PDF file"}
-          </Button>
-        </div>
-        
-        <Button 
-          onClick={handleSubmit} 
-          disabled={!text.trim() || isPending || isProcessingPdf}
-          className="w-full sm:w-auto"
-        >
-          {isPending ? (
-            <>
-              <div className="w-3.5 h-3.5 mr-2 border-2 border-background/30 border-t-background rounded-full animate-spin" />
-              Extracting
-            </>
-          ) : (
-            <>
-              Extract Dates
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
-      </div>
+      {/* Submit */}
+      <Button
+        onClick={handleSubmit}
+        disabled={!text.trim() || isPending || isProcessingPdf}
+        className="w-full sm:w-auto self-end"
+      >
+        {isPending ? (
+          <>
+            <div className="w-3.5 h-3.5 mr-2 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+            Extracting
+          </>
+        ) : (
+          <>
+            Extract Dates
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </>
+        )}
+      </Button>
     </div>
   );
 }
