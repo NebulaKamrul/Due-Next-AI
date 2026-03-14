@@ -1,0 +1,11 @@
+packages:
+  "framer-motion": "Smooth entry animations for the assignments list"
+  "date-fns": "Human-readable date formatting for due dates"
+  "pdfjs-dist": "Client-side PDF text extraction"
+
+images: []
+
+notes:
+  - Using pdfjs-dist for client-side text extraction from PDF files.
+  - Relying on @workspace/api-client-react for the useExtractDueDates hook.
+  - Generating .ics file entirely client-side.

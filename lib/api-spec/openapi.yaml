@@ -1,6 +1,5 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
   description: API specification
@@ -10,6 +9,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: syllabus
+    description: Syllabus parsing operations
 paths:
   /healthz:
     get:
@@ -24,6 +25,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /syllabus/extract:
+    post:
+      operationId: extractDueDates
+      tags: [syllabus]
+      summary: Extract due dates from syllabus text
+      description: Uses AI to extract assignment names, due dates, and weights from syllabus text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExtractDueDatesRequest"
+      responses:
+        "200":
+          description: Extracted assignments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtractDueDatesResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +65,51 @@ components:
           type: string
       required:
         - status
-
+    ExtractDueDatesRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Raw syllabus text to extract due dates from
+      required:
+        - text
+    Assignment:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the assignment
+        dueDate:
+          type: string
+          description: Due date in ISO 8601 format (YYYY-MM-DD)
+        weight:
+          type: string
+          nullable: true
+          description: Grading weight or percentage if available
+        description:
+          type: string
+          nullable: true
+          description: Optional additional details about the assignment
+      required:
+        - name
+        - dueDate
+    ExtractDueDatesResponse:
+      type: object
+      properties:
+        assignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Assignment"
+        courseName:
+          type: string
+          nullable: true
+          description: Course name if detected
+      required:
+        - assignments
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

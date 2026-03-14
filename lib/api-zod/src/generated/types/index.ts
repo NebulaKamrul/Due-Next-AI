@@ -6,4 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./assignment";
+export * from "./errorResponse";
+export * from "./extractDueDatesRequest";
+export * from "./extractDueDatesResponse";
 export * from "./healthStatus";

@@ -8,3 +8,29 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface ExtractDueDatesRequest {
+  /** Raw syllabus text to extract due dates from */
+  text: string;
+}
+
+export interface Assignment {
+  /** Name of the assignment */
+  name: string;
+  /** Due date in ISO 8601 format (YYYY-MM-DD) */
+  dueDate: string;
+  /** Grading weight or percentage if available */
+  weight?: string | null;
+  /** Optional additional details about the assignment */
+  description?: string | null;
+}
+
+export interface ExtractDueDatesResponse {
+  assignments: Assignment[];
+  /** Course name if detected */
+  courseName?: string | null;
+}
+
+export interface ErrorResponse {
+  error: string;
+}

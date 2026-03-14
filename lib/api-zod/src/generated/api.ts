@@ -14,3 +14,31 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Uses AI to extract assignment names, due dates, and weights from syllabus text
+ * @summary Extract due dates from syllabus text
+ */
+export const ExtractDueDatesBody = zod.object({
+  text: zod.string().describe("Raw syllabus text to extract due dates from"),
+});
+
+export const ExtractDueDatesResponse = zod.object({
+  assignments: zod.array(
+    zod.object({
+      name: zod.string().describe("Name of the assignment"),
+      dueDate: zod
+        .string()
+        .describe("Due date in ISO 8601 format (YYYY-MM-DD)"),
+      weight: zod
+        .string()
+        .nullish()
+        .describe("Grading weight or percentage if available"),
+      description: zod
+        .string()
+        .nullish()
+        .describe("Optional additional details about the assignment"),
+    }),
+  ),
+  courseName: zod.string().nullish().describe("Course name if detected"),
+});

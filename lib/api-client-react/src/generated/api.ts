@@ -5,18 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  ErrorResponse,
+  ExtractDueDatesRequest,
+  ExtractDueDatesResponse,
+  HealthStatus,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +107,90 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * Uses AI to extract assignment names, due dates, and weights from syllabus text
+ * @summary Extract due dates from syllabus text
+ */
+export const getExtractDueDatesUrl = () => {
+  return `/api/syllabus/extract`;
+};
+
+export const extractDueDates = async (
+  extractDueDatesRequest: ExtractDueDatesRequest,
+  options?: RequestInit,
+): Promise<ExtractDueDatesResponse> => {
+  return customFetch<ExtractDueDatesResponse>(getExtractDueDatesUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(extractDueDatesRequest),
+  });
+};
+
+export const getExtractDueDatesMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof extractDueDates>>,
+    TError,
+    { data: BodyType<ExtractDueDatesRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof extractDueDates>>,
+  TError,
+  { data: BodyType<ExtractDueDatesRequest> },
+  TContext
+> => {
+  const mutationKey = ["extractDueDates"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof extractDueDates>>,
+    { data: BodyType<ExtractDueDatesRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return extractDueDates(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ExtractDueDatesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof extractDueDates>>
+>;
+export type ExtractDueDatesMutationBody = BodyType<ExtractDueDatesRequest>;
+export type ExtractDueDatesMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Extract due dates from syllabus text
+ */
+export const useExtractDueDates = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof extractDueDates>>,
+    TError,
+    { data: BodyType<ExtractDueDatesRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof extractDueDates>>,
+  TError,
+  { data: BodyType<ExtractDueDatesRequest> },
+  TContext
+> => {
+  return useMutation(getExtractDueDatesMutationOptions(options));
+};
