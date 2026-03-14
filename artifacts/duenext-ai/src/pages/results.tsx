@@ -159,6 +159,20 @@ export default function ResultsPage() {
               Upload another
             </Button>
           </motion.div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15 }}
+            className="text-sm text-muted-foreground text-center"
+          >
+            No idea how to import a .ics file into your calendar?{" "}
+            <button
+              onClick={() => navigate("/how-to-import")}
+              className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+            >
+              Let me show you.
+            </button>
+          </motion.p>
         )}
       </div>
 
