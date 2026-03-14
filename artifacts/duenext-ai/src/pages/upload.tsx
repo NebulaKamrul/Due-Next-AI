@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useExtractDueDates } from "@workspace/api-client-react";
@@ -5,6 +6,38 @@ import { Layout } from "@/components/Layout";
 import { SyllabusForm } from "@/components/SyllabusForm";
 import { useToast } from "@/hooks/use-toast";
 import { saveResults } from "@/lib/store";
+
+function TypeWriter({ text, delay = 0, className = "" }: { text: string; delay?: number; className?: string }) {
+  const [displayed, setDisplayed] = useState("");
+  const [started, setStarted] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
+
+  useEffect(() => {
+    const startTimer = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(startTimer);
+  }, [delay]);
+
+  useEffect(() => {
+    if (!started) return;
+    if (displayed.length >= text.length) {
+      const cursorTimer = setTimeout(() => setShowCursor(false), 600);
+      return () => clearTimeout(cursorTimer);
+    }
+    const timer = setTimeout(() => {
+      setDisplayed(text.slice(0, displayed.length + 1));
+    }, 70 + Math.random() * 40);
+    return () => clearTimeout(timer);
+  }, [started, displayed, text]);
+
+  return (
+    <span className={className}>
+      {displayed}
+      {showCursor && started && (
+        <span className="animate-pulse ml-[1px]">|</span>
+      )}
+    </span>
+  );
+}
 
 const containerVars = {
   hidden: { opacity: 0 },
@@ -72,14 +105,7 @@ export default function UploadPage() {
         <motion.div className="space-y-5 pt-4" variants={fadeUp}>
           <h1 className="font-display text-4xl sm:text-5xl font-semibold tracking-tight text-foreground leading-[1.1]">
             Upload your syllabus and we'll tell you what's{" "}
-            <motion.span
-              className="text-primary inline-block italic"
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", damping: 18, stiffness: 90, delay: 0.5 }}
-            >
-              due next.
-            </motion.span>
+            <TypeWriter text="due next." delay={600} className="text-primary italic" />
           </h1>
           <motion.p
             className="text-muted-foreground text-lg leading-relaxed max-w-md"
