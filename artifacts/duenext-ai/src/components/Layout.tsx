@@ -20,7 +20,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="h-16 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <CalendarRange className="w-5 h-5 text-primary" />
-              <span className="font-display text-lg font-semibold tracking-tight text-foreground">DueNext</span>
+              <span className="font-display text-lg font-semibold tracking-tight text-foreground">DueNext<span className="text-primary">.ai</span></span>
             </div>
 
             <button
@@ -62,7 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="max-w-4xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <CalendarRange className="w-4 h-4 text-primary/60" />
-            <span className="font-display text-sm text-foreground/70">DueNext</span>
+            <span className="font-display text-sm text-foreground/70">DueNext<span className="text-primary/60">.ai</span></span>
           </div>
 
           <div className="flex items-center gap-4">
