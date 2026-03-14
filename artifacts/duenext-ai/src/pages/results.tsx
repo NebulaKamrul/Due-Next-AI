@@ -145,34 +145,36 @@ export default function ResultsPage() {
         </AnimatePresence>
 
         {hasExported && hasResults && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col sm:flex-row items-center justify-between gap-4 border border-border rounded-md p-5 bg-muted/20"
-          >
-            <div>
-              <p className="text-sm font-medium text-foreground">Got more syllabi?</p>
-              <p className="text-sm text-muted-foreground">Upload another syllabus and export it too.</p>
-            </div>
-            <Button variant="outline" onClick={() => navigate("/")}>
-              <Plus className="w-4 h-4 mr-2" />
-              Upload another
-            </Button>
-          </motion.div>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.15 }}
-            className="text-sm text-muted-foreground text-center"
-          >
-            No idea how to import a .ics file into your calendar?{" "}
-            <button
-              onClick={() => navigate("/how-to-import")}
-              className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col sm:flex-row items-center justify-between gap-4 border border-border rounded-md p-5 bg-muted/20"
             >
-              Let me show you.
-            </button>
-          </motion.p>
+              <div>
+                <p className="text-sm font-medium text-foreground">Got more syllabi?</p>
+                <p className="text-sm text-muted-foreground">Upload another syllabus and export it too.</p>
+              </div>
+              <Button variant="outline" onClick={() => navigate("/")}>
+                <Plus className="w-4 h-4 mr-2" />
+                Upload another
+              </Button>
+            </motion.div>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+              className="text-sm text-muted-foreground text-center"
+            >
+              No idea how to import a .ics file into your calendar?{" "}
+              <button
+                onClick={() => navigate("/how-to-import")}
+                className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+              >
+                Let me show you.
+              </button>
+            </motion.p>
+          </>
         )}
       </div>
 
