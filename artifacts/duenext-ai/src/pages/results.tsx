@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, ArrowLeft, Plus } from "lucide-react";
+import { Download, ArrowLeft, Plus, CheckCircle2, ArrowRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ export default function ResultsPage() {
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [exportFilename, setExportFilename] = useState("");
   const [hasExported, setHasExported] = useState(false);
+  const [showPostExportDialog, setShowPostExportDialog] = useState(false);
 
   useEffect(() => {
     setResults(loadResults());
@@ -52,10 +53,7 @@ export default function ResultsPage() {
     downloadICS(icsString, filename);
     setShowExportDialog(false);
     setHasExported(true);
-    toast({
-      title: "Exported",
-      description: `${results.assignments.length} assignments downloaded as ${filename}`,
-    });
+    setShowPostExportDialog(true);
   };
 
   const handleUpdateAssignment = (idx: number, updated: EditableAssignment) => {
@@ -145,36 +143,20 @@ export default function ResultsPage() {
         </AnimatePresence>
 
         {hasExported && hasResults && (
-          <>
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col sm:flex-row items-center justify-between gap-4 border border-border rounded-md p-5 bg-muted/20"
-            >
-              <div>
-                <p className="text-sm font-medium text-foreground">Got more syllabi?</p>
-                <p className="text-sm text-muted-foreground">Upload another syllabus and export it too.</p>
-              </div>
-              <Button variant="outline" onClick={() => navigate("/")}>
-                <Plus className="w-4 h-4 mr-2" />
-                Upload another
-              </Button>
-            </motion.div>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              className="text-sm text-muted-foreground text-center"
-            >
-              No idea how to import a .ics file into your calendar?{" "}
-              <button
-                onClick={() => navigate("/how-to-import")}
-                className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
-              >
-                Let me show you.
-              </button>
-            </motion.p>
-          </>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col sm:flex-row items-center justify-between gap-4 border border-border rounded-md p-5 bg-muted/20"
+          >
+            <div>
+              <p className="text-sm font-medium text-foreground">Got more syllabi?</p>
+              <p className="text-sm text-muted-foreground">Upload another syllabus and export it too.</p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/")}>
+              <Plus className="w-4 h-4 mr-2" />
+              Upload another
+            </Button>
+          </motion.div>
         )}
       </div>
 
@@ -204,6 +186,39 @@ export default function ResultsPage() {
               Download
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPostExportDialog} onOpenChange={setShowPostExportDialog}>
+        <DialogContent className="sm:max-w-sm text-center">
+          <div className="flex flex-col items-center gap-4 pt-2">
+            <CheckCircle2 className="w-10 h-10 text-primary" />
+            <div className="space-y-1">
+              <DialogTitle className="text-lg">File downloaded!</DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                No idea how to import a .ics file into your calendar?
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 w-full pt-2">
+              <Button
+                className="w-full"
+                onClick={() => {
+                  setShowPostExportDialog(false);
+                  navigate("/how-to-import");
+                }}
+              >
+                Show me how
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full text-muted-foreground"
+                onClick={() => setShowPostExportDialog(false)}
+              >
+                I know what I'm doing
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </Layout>
