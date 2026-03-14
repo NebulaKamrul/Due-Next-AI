@@ -55,7 +55,7 @@ export default function HowToImportPage() {
     <Layout>
       <div className="max-w-2xl mx-auto flex flex-col gap-10">
         <div className="space-y-4 pt-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
             How to Import into Google Calendar
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed">

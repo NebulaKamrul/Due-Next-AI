@@ -78,7 +78,7 @@ export default function ResultsPage() {
         {/* Page header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border pb-6">
           <div className="space-y-1">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Extracted Assignments</h1>
+            <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Extracted Assignments</h1>
             {hasResults && (
               <div className="flex items-center gap-3 pt-1">
                 {results?.courseName && (

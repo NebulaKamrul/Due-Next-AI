@@ -10,27 +10,27 @@ const containerVars = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.05 },
+    transition: { staggerChildren: 0.15, delayChildren: 0.08 },
   },
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 24, filter: "blur(10px)" },
   show: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { type: "spring", damping: 25, stiffness: 120 },
+    transition: { type: "spring", damping: 28, stiffness: 100 },
   },
 };
 
 const fadeUpSlow = {
-  hidden: { opacity: 0, y: 30, filter: "blur(6px)" },
+  hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
   show: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { type: "spring", damping: 20, stiffness: 80, delay: 0.3 },
+    transition: { type: "spring", damping: 22, stiffness: 70, delay: 0.35 },
   },
 };
 
@@ -64,25 +64,25 @@ export default function UploadPage() {
   return (
     <Layout>
       <motion.div
-        className="max-w-2xl mx-auto flex flex-col gap-10"
+        className="max-w-2xl mx-auto flex flex-col gap-12"
         variants={containerVars}
         initial="hidden"
         animate="show"
       >
-        <motion.div className="space-y-4 pt-8" variants={fadeUp}>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+        <motion.div className="space-y-5 pt-4" variants={fadeUp}>
+          <h1 className="font-display text-4xl sm:text-5xl font-semibold tracking-tight text-foreground leading-[1.1]">
             Upload your syllabus and we'll tell you what's{" "}
             <motion.span
-              className="text-primary inline-block"
-              initial={{ opacity: 0, scale: 0.9 }}
+              className="text-primary inline-block italic"
+              initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", damping: 15, stiffness: 100, delay: 0.45 }}
+              transition={{ type: "spring", damping: 18, stiffness: 90, delay: 0.5 }}
             >
               due next.
             </motion.span>
           </h1>
           <motion.p
-            className="text-muted-foreground text-lg leading-relaxed max-w-lg"
+            className="text-muted-foreground text-lg leading-relaxed max-w-md"
             variants={fadeUp}
           >
             Paste text or drop a PDF. We'll find every assignment and format it for your calendar.

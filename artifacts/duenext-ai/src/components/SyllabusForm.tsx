@@ -93,10 +93,10 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3">
         {/* Textarea */}
-        <div className="relative border border-border rounded-md bg-background overflow-hidden">
+        <div className="relative border border-border rounded-lg bg-background overflow-hidden shadow-sm transition-shadow focus-within:shadow-md focus-within:border-primary/30">
           <Textarea
             placeholder="Paste syllabus text here..."
-            className="min-h-[200px] w-full resize-none border-0 p-5 text-base bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/50 rounded-none shadow-none"
+            className="min-h-[200px] w-full resize-none border-0 p-6 text-base bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/40 placeholder:italic rounded-none shadow-none"
             value={text}
             onChange={(e) => setText(e.target.value)}
             disabled={isPending || isProcessingPdf}
@@ -104,10 +104,10 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
         </div>
 
         {/* Divider */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground uppercase tracking-widest">or</span>
-          <div className="flex-1 h-px bg-border" />
+        <div className="flex items-center gap-4">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+          <span className="text-[10px] text-muted-foreground/60 uppercase tracking-[0.2em] font-medium">or</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
 
         {/* Drop zone */}
@@ -137,18 +137,25 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
             onDragLeave={handleDragLeave}
             onClick={() => fileInputRef.current?.click()}
             className={`
-              border-2 border-dashed rounded-md p-8 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors
+              border border-dashed rounded-lg p-10 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-200
               ${isDragging
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-muted-foreground/40 hover:bg-muted/20"
+                ? "border-primary bg-primary/5 shadow-md"
+                : "border-border/60 hover:border-primary/30 hover:bg-muted/10 hover:shadow-sm"
               }
               ${(isPending || isProcessingPdf) ? "opacity-50 pointer-events-none" : ""}
             `}
           >
-            <Upload className="w-5 h-5 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">
-              {isProcessingPdf ? "Reading PDF..." : "Drop a PDF here or click to browse"}
-            </p>
+            <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center">
+              <Upload className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-foreground/70">
+                {isProcessingPdf ? "Reading PDF..." : "Drop a PDF here"}
+              </p>
+              {!isProcessingPdf && (
+                <p className="text-xs text-muted-foreground/50 mt-0.5">or click to browse files</p>
+              )}
+            </div>
           </div>
         )}
       </div>

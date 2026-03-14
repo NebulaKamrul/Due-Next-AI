@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { CalendarRange, Upload, ListChecks, BookOpen, Sun, Moon } from "lucide-react";
+import { CalendarRange, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme";
 
@@ -15,36 +15,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 bg-background border-b border-border/60">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          {/* Brand + toggle row */}
-          <div className="h-14 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CalendarRange className="w-5 h-5 text-foreground" />
-              <span className="font-semibold text-base tracking-tight text-foreground">DueNext</span>
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
+        <div className="max-w-4xl mx-auto px-6 sm:px-8">
+          <div className="h-16 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <CalendarRange className="w-5 h-5 text-primary" />
+              <span className="font-display text-lg font-semibold tracking-tight text-foreground">DueNext</span>
             </div>
 
-            {/* Dark mode toggle */}
             <button
               onClick={toggle}
               aria-label="Toggle dark mode"
-              className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted/50"
             >
               {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
           </div>
 
-          {/* Nav tabs */}
-          <div className="flex gap-6 -mb-px">
+          <div className="flex gap-8 -mb-px">
             {navItems.map(({ href, label }) => {
               const isActive = location === href;
               return (
                 <Link key={href} href={href}>
                   <button
                     className={cn(
-                      "py-3 text-sm font-medium border-b-2 transition-colors",
+                      "py-3 text-sm tracking-wide transition-colors border-b-2",
                       isActive
-                        ? "border-foreground text-foreground"
+                        ? "border-primary text-foreground font-medium"
                         : "border-transparent text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -57,9 +54,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+      <main className="max-w-4xl mx-auto px-6 sm:px-8 py-16">
         {children}
       </main>
+
+      <footer className="border-t border-border/40 py-8">
+        <div className="max-w-4xl mx-auto px-6 sm:px-8 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground/60 tracking-wide">
+            DueNext &mdash; Never miss a deadline.
+          </p>
+          <p className="text-xs text-muted-foreground/40 tracking-wide font-mono">
+            &copy; {new Date().getFullYear()}
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
