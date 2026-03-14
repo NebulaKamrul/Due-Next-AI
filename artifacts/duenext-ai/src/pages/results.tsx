@@ -5,6 +5,8 @@ import { Download, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { generateICS, downloadICS } from "@/lib/ics";
 import { loadResults, clearResults, StoredResults } from "@/lib/store";
@@ -22,21 +24,35 @@ export default function ResultsPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [results, setResults] = useState<StoredResults | null>(null);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [exportFilename, setExportFilename] = useState("");
 
   useEffect(() => {
     setResults(loadResults());
   }, []);
 
-  const handleExport = () => {
+  const defaultFilename = () => {
+    if (results?.courseName) {
+      return `${results.courseName.toLowerCase().replace(/\s+/g, "-")}-assignments`;
+    }
+    return "syllabus-assignments";
+  };
+
+  const openExportDialog = () => {
+    setExportFilename(defaultFilename());
+    setShowExportDialog(true);
+  };
+
+  const confirmExport = () => {
     if (!results || results.assignments.length === 0) return;
     const icsString = generateICS(results.assignments, results.courseName);
-    const filename = results.courseName
-      ? `${results.courseName.toLowerCase().replace(/\s+/g, "-")}-assignments.ics`
-      : "syllabus-assignments.ics";
+    const name = exportFilename.trim() || defaultFilename();
+    const filename = name.endsWith(".ics") ? name : `${name}.ics`;
     downloadICS(icsString, filename);
+    setShowExportDialog(false);
     toast({
       title: "Exported",
-      description: `${results.assignments.length} assignments downloaded.`,
+      description: `${results.assignments.length} assignments downloaded as ${filename}`,
     });
   };
 
@@ -61,7 +77,7 @@ export default function ResultsPage() {
                     {results.courseName}
                   </span>
                 )}
-                {results?.courseName && <span className="text-muted-foreground">·</span>}
+                {results?.courseName && <span className="text-muted-foreground">&middot;</span>}
                 <span className="text-sm text-muted-foreground">
                   {results.assignments.length} assignments found
                 </span>
@@ -74,7 +90,7 @@ export default function ResultsPage() {
               <Button variant="ghost" onClick={handleClear} className="text-muted-foreground">
                 Clear
               </Button>
-              <Button onClick={handleExport}>
+              <Button onClick={openExportDialog}>
                 <Download className="w-4 h-4 mr-2" />
                 Export .ics
               </Button>
@@ -117,6 +133,35 @@ export default function ResultsPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Export filename dialog */}
+      <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Export filename</DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center gap-2">
+            <Input
+              value={exportFilename}
+              onChange={(e) => setExportFilename(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && confirmExport()}
+              placeholder="syllabus-assignments"
+              className="flex-1"
+              autoFocus
+            />
+            <span className="text-sm text-muted-foreground shrink-0">.ics</span>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <DialogClose asChild>
+              <Button variant="ghost">Cancel</Button>
+            </DialogClose>
+            <Button onClick={confirmExport}>
+              <Download className="w-4 h-4 mr-2" />
+              Download
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
