@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Inbox, ArrowLeft, Trash2 } from "lucide-react";
+import { Download, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,11 @@ import { loadResults, clearResults, StoredResults } from "@/lib/store";
 
 const containerVars = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.04 } },
 };
 const itemVars = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: "tween", ease: "easeOut", duration: 0.2 } },
 };
 
 export default function ResultsPage() {
@@ -35,7 +35,7 @@ export default function ResultsPage() {
       : "syllabus-assignments.ics";
     downloadICS(icsString, filename);
     toast({
-      title: "Exported!",
+      title: "Exported",
       description: `${results.assignments.length} assignments downloaded.`,
     });
   };
@@ -49,32 +49,34 @@ export default function ResultsPage() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-8">
         {/* Page header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/50 pb-5">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Extracted Assignments</h1>
-            {results?.courseName && (
-              <span className="inline-block mt-1.5 text-sm font-medium bg-muted px-2.5 py-0.5 rounded-md text-muted-foreground">
-                {results.courseName}
-              </span>
-            )}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border pb-6">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Extracted Assignments</h1>
             {hasResults && (
-              <p className="text-sm text-muted-foreground mt-1">
-                {results.assignments.length} assignment{results.assignments.length !== 1 ? "s" : ""} found, sorted by due date
-              </p>
+              <div className="flex items-center gap-3 pt-1">
+                {results?.courseName && (
+                  <span className="text-sm font-medium text-foreground">
+                    {results.courseName}
+                  </span>
+                )}
+                {results?.courseName && <span className="text-muted-foreground">·</span>}
+                <span className="text-sm text-muted-foreground">
+                  {results.assignments.length} assignments found
+                </span>
+              </div>
             )}
           </div>
 
           {hasResults && (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleClear} className="text-muted-foreground">
-                <Trash2 className="w-4 h-4 mr-1.5" />
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" onClick={handleClear} className="text-muted-foreground">
                 Clear
               </Button>
-              <Button onClick={handleExport} className="shadow-sm">
+              <Button onClick={handleExport}>
                 <Download className="w-4 h-4 mr-2" />
-                Export to Google Calendar
+                Export .ics
               </Button>
             </div>
           )}
@@ -88,10 +90,10 @@ export default function ResultsPage() {
               variants={containerVars}
               initial="hidden"
               animate="show"
-              className="flex flex-col gap-3"
+              className="flex flex-col gap-px bg-border border border-border rounded-md overflow-hidden"
             >
               {results.assignments.map((assignment, idx) => (
-                <motion.div key={`${assignment.name}-${idx}`} variants={itemVars}>
+                <motion.div key={`${assignment.name}-${idx}`} variants={itemVars} className="bg-background">
                   <AssignmentCard assignment={assignment} />
                 </motion.div>
               ))}
@@ -101,18 +103,15 @@ export default function ResultsPage() {
               key="empty"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-border/50 rounded-2xl bg-muted/10"
+              className="flex flex-col items-start py-12"
             >
-              <div className="bg-muted p-4 rounded-full mb-4">
-                <Inbox className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold mb-1">No results yet</h3>
-              <p className="text-muted-foreground text-sm max-w-xs mb-6">
-                Upload or paste your syllabus on the Upload page to get started.
+              <h3 className="text-lg font-medium mb-2 text-foreground">No assignments extracted</h3>
+              <p className="text-muted-foreground text-base max-w-sm mb-6">
+                Go back and paste your syllabus text to extract dates.
               </p>
               <Button variant="outline" onClick={() => navigate("/")}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Go to Upload
+                Back to Upload
               </Button>
             </motion.div>
           )}

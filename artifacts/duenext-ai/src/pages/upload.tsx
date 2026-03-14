@@ -1,5 +1,4 @@
 import { useLocation } from "wouter";
-import { Sparkles } from "lucide-react";
 import { useExtractDueDates } from "@workspace/api-client-react";
 import { Layout } from "@/components/Layout";
 import { SyllabusForm } from "@/components/SyllabusForm";
@@ -35,34 +34,19 @@ export default function UploadPage() {
 
   return (
     <Layout>
-      <div className="max-w-2xl mx-auto flex flex-col gap-8">
+      <div className="max-w-2xl mx-auto flex flex-col gap-10">
         {/* Hero */}
-        <div className="text-center space-y-3 pt-4">
-          <h1 className="text-4xl font-extrabold tracking-tight">
+        <div className="space-y-4 pt-8">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
             Upload your syllabus and we'll tell you what's <span className="text-primary">due next.</span>
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed max-w-lg mx-auto">
-            Paste your syllabus or drop in a PDF — we'll extract every assignment and due date so you don't have to.
+          <p className="text-muted-foreground text-lg leading-relaxed max-w-lg">
+            Paste text or drop a PDF. We'll find every assignment and format it for your calendar.
           </p>
         </div>
 
         {/* Form */}
         <SyllabusForm onSubmit={handleExtract} isPending={extractMutation.isPending} />
-
-        {/* How it works */}
-        <div className="grid grid-cols-3 gap-4 pt-2">
-          {[
-            { step: "1", title: "Paste or upload", body: "Drop in your syllabus text or upload a PDF." },
-            { step: "2", title: "AI extracts dates", body: "We find every assignment and due date automatically." },
-            { step: "3", title: "Export to calendar", body: "Download a .ics file and import it in seconds." },
-          ].map(({ step, title, body }) => (
-            <div key={step} className="flex flex-col gap-2 p-4 bg-muted/40 rounded-xl border border-border/40 text-center">
-              <span className="text-2xl font-extrabold text-primary/50">{step}</span>
-              <p className="text-sm font-semibold text-foreground">{title}</p>
-              <p className="text-xs text-muted-foreground leading-relaxed">{body}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </Layout>
   );

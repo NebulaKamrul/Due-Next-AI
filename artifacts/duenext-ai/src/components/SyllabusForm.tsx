@@ -1,8 +1,7 @@
 import { useState, useRef } from "react";
-import { FileUp, Sparkles, X, File as FileIcon } from "lucide-react";
+import { ArrowRight, X, File as FileIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { extractTextFromPDF } from "@/lib/pdf";
 
@@ -41,15 +40,15 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
       }
       setText(extractedText);
       toast({
-        title: "PDF Parsed Successfully",
-        description: "Review the text below and click Extract.",
+        title: "PDF Parsed",
+        description: "Text extracted. You can review and extract dates.",
       });
     } catch (error) {
       console.error(error);
       setFileName(null);
       toast({
         title: "Failed to read PDF",
-        description: error instanceof Error ? error.message : "Could not extract text. Please paste it manually.",
+        description: error instanceof Error ? error.message : "Could not extract text.",
         variant: "destructive",
       });
     } finally {
@@ -71,11 +70,11 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
   };
 
   return (
-    <Card className="p-1 shadow-md border-border/60 bg-card overflow-hidden">
+    <div className="flex flex-col border border-border rounded-md bg-background overflow-hidden">
       <div className="relative">
         <Textarea
-          placeholder="Paste your syllabus text here..."
-          className="min-h-[280px] w-full resize-none border-0 p-6 text-base bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/60"
+          placeholder="Paste syllabus text here..."
+          className="min-h-[320px] w-full resize-none border-0 p-6 text-base bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/50 rounded-none shadow-none"
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={isPending || isProcessingPdf}
@@ -83,24 +82,21 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
         
         {/* PDF Overlay indicator */}
         {fileName && (
-          <div className="absolute top-4 left-4 right-4 bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-center justify-between backdrop-blur-sm">
+          <div className="absolute top-4 left-4 right-4 bg-muted/50 border border-border rounded p-3 flex items-center justify-between">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="bg-primary/10 p-2 rounded-md shrink-0">
-                <FileIcon className="w-5 h-5 text-primary" />
-              </div>
+              <FileIcon className="w-4 h-4 text-muted-foreground shrink-0" />
               <div className="truncate">
                 <p className="text-sm font-medium text-foreground truncate">{fileName}</p>
-                <p className="text-xs text-muted-foreground">Text extracted. You can edit before submitting.</p>
               </div>
             </div>
-            <Button size="icon" variant="ghost" className="shrink-0 rounded-full" onClick={clearFile} disabled={isPending}>
-              <X className="w-4 h-4" />
+            <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" onClick={clearFile} disabled={isPending}>
+              <X className="w-3 h-3" />
             </Button>
           </div>
         )}
       </div>
 
-      <div className="bg-muted/30 border-t border-border/50 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-muted/20 border-t border-border p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <input
             type="file"
@@ -111,35 +107,33 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
             disabled={isPending || isProcessingPdf}
           />
           <Button
-            variant="outline"
-            className="text-muted-foreground bg-white hover:bg-muted/50 transition-colors w-full sm:w-auto"
+            variant="ghost"
+            className="text-muted-foreground hover:text-foreground font-normal px-2 w-full sm:w-auto"
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || isProcessingPdf}
           >
-            <FileUp className="w-4 h-4 mr-2" />
-            {isProcessingPdf ? "Reading PDF..." : "Upload PDF"}
+            {isProcessingPdf ? "Reading PDF..." : "Upload PDF file"}
           </Button>
         </div>
         
         <Button 
-          size="lg" 
           onClick={handleSubmit} 
           disabled={!text.trim() || isPending || isProcessingPdf}
-          className="w-full sm:w-auto shadow-md shadow-primary/20 hover:-translate-y-0.5 transition-all duration-200"
+          className="w-full sm:w-auto"
         >
           {isPending ? (
             <>
-              <div className="w-4 h-4 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-              Extracting...
+              <div className="w-3.5 h-3.5 mr-2 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+              Extracting
             </>
           ) : (
             <>
-              <Sparkles className="w-4 h-4 mr-2" />
-              Extract Due Dates
+              Extract Dates
+              <ArrowRight className="w-4 h-4 ml-2" />
             </>
           )}
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }

@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme";
 
 const navItems = [
-  { href: "/", label: "Upload", icon: Upload },
-  { href: "/results", label: "Results", icon: ListChecks },
-  { href: "/how-to-import", label: "How to Import", icon: BookOpen },
+  { href: "/", label: "Upload" },
+  { href: "/results", label: "Results" },
+  { href: "/how-to-import", label: "How to Import" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -15,52 +15,39 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border/50">
+      <header className="sticky top-0 z-50 bg-background border-b border-border/60">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           {/* Brand + toggle row */}
           <div className="h-14 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="bg-primary text-primary-foreground p-1.5 rounded-lg shadow-sm">
-                <CalendarRange className="w-4 h-4" />
-              </div>
-              <span className="font-bold text-base tracking-tight">DueNext AI</span>
+            <div className="flex items-center gap-2">
+              <CalendarRange className="w-5 h-5 text-foreground" />
+              <span className="font-semibold text-base tracking-tight text-foreground">DueNext</span>
             </div>
 
             {/* Dark mode toggle */}
             <button
               onClick={toggle}
               aria-label="Toggle dark mode"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
             >
-              {theme === "dark" ? (
-                <>
-                  <Sun className="w-4 h-4" />
-                  <span className="hidden sm:inline">Light</span>
-                </>
-              ) : (
-                <>
-                  <Moon className="w-4 h-4" />
-                  <span className="hidden sm:inline">Dark</span>
-                </>
-              )}
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
           </div>
 
           {/* Nav tabs */}
-          <div className="flex gap-1 -mb-px">
-            {navItems.map(({ href, label, icon: Icon }) => {
+          <div className="flex gap-6 -mb-px">
+            {navItems.map(({ href, label }) => {
               const isActive = location === href;
               return (
                 <Link key={href} href={href}>
                   <button
                     className={cn(
-                      "flex items-center gap-2 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors",
+                      "py-3 text-sm font-medium border-b-2 transition-colors",
                       isActive
-                        ? "border-primary text-primary"
-                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                        ? "border-foreground text-foreground"
+                        : "border-transparent text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    <Icon className="w-4 h-4" />
                     {label}
                   </button>
                 </Link>
@@ -70,7 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
         {children}
       </main>
     </div>
