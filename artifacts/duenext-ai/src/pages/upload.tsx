@@ -39,7 +39,7 @@ export default function UploadPage() {
         {/* Hero */}
         <div className="text-center space-y-3 pt-4">
           <h1 className="text-4xl font-extrabold tracking-tight">
-            Upload your syllabus,<br />we'll tell you <span className="text-primary">what's due next.</span>
+            Upload your syllabus and we'll tell you what's <span className="text-primary">due next.</span>
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed max-w-lg mx-auto">
             Paste your syllabus or drop in a PDF — we'll extract every assignment and due date so you don't have to.
