@@ -61,7 +61,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-border/40 py-8">
         <div className="max-w-4xl mx-auto px-6 sm:px-8 flex items-center justify-between">
           <p className="text-xs text-muted-foreground/60 tracking-wide">
-            DueNext &mdash; Never miss a deadline.
+            nebula kamrul
           </p>
           <p className="text-xs text-muted-foreground/40 tracking-wide font-mono">
             &copy; {new Date().getFullYear()}
