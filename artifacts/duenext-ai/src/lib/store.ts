@@ -2,8 +2,14 @@ import { Assignment } from "@workspace/api-client-react/src/generated/api.schema
 
 const STORAGE_KEY = "duenext_results";
 
+export interface EditableAssignment extends Assignment {
+  dueTime?: string | null;
+  activityTime?: string | null;
+  type?: "assignment" | "class-activity";
+}
+
 export interface StoredResults {
-  assignments: Assignment[];
+  assignments: EditableAssignment[];
   courseName: string | null;
 }
 

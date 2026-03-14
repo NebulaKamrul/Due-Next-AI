@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { generateICS, downloadICS } from "@/lib/ics";
-import { loadResults, clearResults, StoredResults } from "@/lib/store";
+import { loadResults, clearResults, saveResults, StoredResults, EditableAssignment } from "@/lib/store";
 
 const containerVars = {
   hidden: { opacity: 0 },
@@ -54,6 +54,15 @@ export default function ResultsPage() {
       title: "Exported",
       description: `${results.assignments.length} assignments downloaded as ${filename}`,
     });
+  };
+
+  const handleUpdateAssignment = (idx: number, updated: EditableAssignment) => {
+    if (!results) return;
+    const newAssignments = [...results.assignments];
+    newAssignments[idx] = updated;
+    const newResults = { ...results, assignments: newAssignments };
+    setResults(newResults);
+    saveResults(newResults);
   };
 
   const handleClear = () => {
@@ -110,7 +119,7 @@ export default function ResultsPage() {
             >
               {results.assignments.map((assignment, idx) => (
                 <motion.div key={`${assignment.name}-${idx}`} variants={itemVars} className="bg-background">
-                  <AssignmentCard assignment={assignment} />
+                  <AssignmentCard assignment={assignment} onUpdate={(updated) => handleUpdateAssignment(idx, updated)} />
                 </motion.div>
               ))}
             </motion.div>

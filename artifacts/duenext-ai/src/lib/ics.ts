@@ -1,20 +1,12 @@
-import { Assignment } from "@workspace/api-client-react/src/generated/api.schemas";
+import { EditableAssignment } from "@/lib/store";
 
-export function generateICS(assignments: Assignment[], courseName?: string | null): string {
+export function generateICS(assignments: EditableAssignment[], courseName?: string | null): string {
   let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//DueNext AI//EN\nCALSCALE:GREGORIAN\n";
   
   const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
   assignments.forEach((assignment, index) => {
-    // Basic validation of date to ensure we don't break the ICS format
     if (!assignment.dueDate) return;
-    
-    const dtstart = assignment.dueDate.replace(/-/g, "");
-    
-    // For all-day events, DTEND is exclusive and must be the next day
-    const endDtObj = new Date(assignment.dueDate);
-    endDtObj.setDate(endDtObj.getDate() + 1);
-    const dtend = endDtObj.toISOString().split('T')[0].replace(/-/g, "");
     
     const summary = courseName 
       ? `${courseName}: ${assignment.name}` 
@@ -24,12 +16,36 @@ export function generateICS(assignments: Assignment[], courseName?: string | nul
     if (assignment.weight) {
       description = `Weight: ${assignment.weight}\\n\\n${description}`;
     }
-    
+    if (assignment.type === "class-activity" && assignment.activityTime) {
+      description = `Activity at ${assignment.activityTime}\\n${description}`;
+    }
+
+    const timeToUse = assignment.type === "class-activity"
+      ? (assignment.activityTime || assignment.dueTime)
+      : assignment.dueTime;
+
     ics += "BEGIN:VEVENT\n";
     ics += `UID:duenext-${Date.now()}-${index}@duenext.ai\n`;
     ics += `DTSTAMP:${now}\n`;
-    ics += `DTSTART;VALUE=DATE:${dtstart}\n`;
-    ics += `DTEND;VALUE=DATE:${dtend}\n`;
+
+    if (timeToUse) {
+      const dtstart = assignment.dueDate.replace(/-/g, "") + "T" + timeToUse.replace(/:/g, "") + "00";
+      const [h, m] = timeToUse.split(":").map(Number);
+      const endMinutes = h * 60 + m + 60;
+      const endH = String(Math.floor(endMinutes / 60) % 24).padStart(2, "0");
+      const endM = String(endMinutes % 60).padStart(2, "0");
+      const dtend = assignment.dueDate.replace(/-/g, "") + "T" + endH + endM + "00";
+      ics += `DTSTART:${dtstart}\n`;
+      ics += `DTEND:${dtend}\n`;
+    } else {
+      const dtstart = assignment.dueDate.replace(/-/g, "");
+      const endDtObj = new Date(assignment.dueDate);
+      endDtObj.setDate(endDtObj.getDate() + 1);
+      const dtend = endDtObj.toISOString().split('T')[0].replace(/-/g, "");
+      ics += `DTSTART;VALUE=DATE:${dtstart}\n`;
+      ics += `DTEND;VALUE=DATE:${dtend}\n`;
+    }
+
     ics += `SUMMARY:${escapeICSString(summary)}\n`;
     if (description) {
       ics += `DESCRIPTION:${escapeICSString(description)}\n`;
