@@ -3,7 +3,7 @@ import { format, parseISO, isValid } from "date-fns";
 import { Pencil, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { EditableAssignment } from "@/lib/store";
+import { EditableAssignment, CALENDAR_COLORS } from "@/lib/store";
 
 interface AssignmentCardProps {
   assignment: EditableAssignment;
@@ -39,6 +39,7 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
   };
 
   const isActivity = draft.type === "class-activity";
+  const colorHex = assignment.color || null;
 
   if (editing) {
     return (
@@ -76,7 +77,6 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
               type="time"
               value={draft.dueTime ?? ""}
               onChange={(e) => setDraft({ ...draft, dueTime: e.target.value || null })}
-              placeholder="11:59 PM"
             />
           </div>
           <div className="flex-1">
@@ -112,6 +112,38 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
           />
         </div>
 
+        <div>
+          <label className="text-xs text-muted-foreground mb-2 block">Calendar color</label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setDraft({ ...draft, color: null })}
+              className={`w-7 h-7 rounded-full border-2 transition-all flex items-center justify-center ${
+                !draft.color
+                  ? "border-foreground scale-110"
+                  : "border-border hover:border-muted-foreground"
+              }`}
+              title="Default"
+            >
+              <X className="w-3 h-3 text-muted-foreground" />
+            </button>
+            {CALENDAR_COLORS.map((c) => (
+              <button
+                key={c.hex}
+                type="button"
+                onClick={() => setDraft({ ...draft, color: c.hex })}
+                className={`w-7 h-7 rounded-full border-2 transition-all ${
+                  draft.color === c.hex
+                    ? "border-foreground scale-110"
+                    : "border-transparent hover:scale-105"
+                }`}
+                style={{ backgroundColor: c.hex }}
+                title={c.name}
+              />
+            ))}
+          </div>
+        </div>
+
         <div className="flex items-center gap-2 pt-1">
           <Button size="sm" onClick={saveEdit}>
             <Check className="w-3.5 h-3.5 mr-1.5" />
@@ -128,28 +160,36 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-5 group">
-      <div className="flex-1">
-        <div className="flex items-center gap-3 mb-1">
-          <h3 className="text-base font-medium text-foreground">
-            {assignment.name}
-          </h3>
-          {assignment.type === "class-activity" && (
-            <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-              Activity
-            </span>
-          )}
-          {assignment.weight && (
-            <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-              {assignment.weight}
-            </span>
+      <div className="flex-1 flex gap-3">
+        {colorHex && (
+          <div
+            className="w-1 rounded-full shrink-0 mt-1"
+            style={{ backgroundColor: colorHex, minHeight: "1.25rem" }}
+          />
+        )}
+        <div>
+          <div className="flex items-center gap-3 mb-1">
+            <h3 className="text-base font-medium text-foreground">
+              {assignment.name}
+            </h3>
+            {assignment.type === "class-activity" && (
+              <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                Activity
+              </span>
+            )}
+            {assignment.weight && (
+              <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                {assignment.weight}
+              </span>
+            )}
+          </div>
+
+          {assignment.description && (
+            <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-3xl">
+              {assignment.description}
+            </p>
           )}
         </div>
-
-        {assignment.description && (
-          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-3xl">
-            {assignment.description}
-          </p>
-        )}
       </div>
 
       <div className="flex items-center gap-3 shrink-0">

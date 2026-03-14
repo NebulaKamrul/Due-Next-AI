@@ -1,4 +1,4 @@
-import { EditableAssignment } from "@/lib/store";
+import { EditableAssignment, CALENDAR_COLORS } from "@/lib/store";
 
 export function generateICS(assignments: EditableAssignment[], courseName?: string | null): string {
   let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//DueNext AI//EN\nCALSCALE:GREGORIAN\n";
@@ -49,6 +49,13 @@ export function generateICS(assignments: EditableAssignment[], courseName?: stri
     ics += `SUMMARY:${escapeICSString(summary)}\n`;
     if (description) {
       ics += `DESCRIPTION:${escapeICSString(description)}\n`;
+    }
+    if (assignment.color) {
+      const colorEntry = CALENDAR_COLORS.find(c => c.hex === assignment.color);
+      if (colorEntry) {
+        ics += `CATEGORIES:${colorEntry.name}\n`;
+        ics += `X-APPLE-CALENDAR-COLOR:${colorEntry.hex}\n`;
+      }
     }
     ics += "END:VEVENT\n";
   });
