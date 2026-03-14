@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarRange, Download, Inbox, ChevronRight } from "lucide-react";
+import { CalendarRange, Download, Inbox, Settings, FolderInput, Import } from "lucide-react";
 import { useExtractDueDates } from "@workspace/api-client-react";
 import { Assignment } from "@workspace/api-client-react/src/generated/api.schemas";
 import { SyllabusForm } from "@/components/SyllabusForm";
@@ -184,6 +184,54 @@ export default function Home() {
             )}
           </AnimatePresence>
         </div>
+
+        {/* How to Import Instructions */}
+        <section className="max-w-3xl mx-auto w-full border-t border-border/40 pt-12">
+          <h2 className="text-xl font-bold tracking-tight mb-6">How to import into Google Calendar</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex flex-col gap-3 bg-muted/40 rounded-xl p-5 border border-border/40">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 text-primary rounded-lg p-2 shrink-0">
+                  <Download className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Step 1</span>
+              </div>
+              <p className="text-sm text-foreground font-medium">Export the .ics file</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                After extracting your assignments, click <strong>Export to Google Calendar</strong> to download the <code className="bg-muted px-1 py-0.5 rounded text-xs">.ics</code> file.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 bg-muted/40 rounded-xl p-5 border border-border/40">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 text-primary rounded-lg p-2 shrink-0">
+                  <Settings className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Step 2</span>
+              </div>
+              <p className="text-sm text-foreground font-medium">Open Google Calendar Settings</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Go to <strong>calendar.google.com</strong>, click the gear icon ⚙️ in the top right, then select <strong>Settings</strong> → <strong>Import &amp; Export</strong>.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 bg-muted/40 rounded-xl p-5 border border-border/40">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 text-primary rounded-lg p-2 shrink-0">
+                  <FolderInput className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Step 3</span>
+              </div>
+              <p className="text-sm text-foreground font-medium">Import the file</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Click <strong>Select file from your computer</strong>, choose your <code className="bg-muted px-1 py-0.5 rounded text-xs">.ics</code> file, pick a calendar, then hit <strong>Import</strong>. Done!
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4">
+            Note: Import must be done from a desktop browser — Google Calendar's mobile app doesn't support .ics imports.
+          </p>
+        </section>
 
       </main>
     </div>
