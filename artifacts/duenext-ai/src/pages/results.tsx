@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, ArrowLeft } from "lucide-react";
+import { Download, ArrowLeft, Plus } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ export default function ResultsPage() {
   const [results, setResults] = useState<StoredResults | null>(null);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [exportFilename, setExportFilename] = useState("");
+  const [hasExported, setHasExported] = useState(false);
 
   useEffect(() => {
     setResults(loadResults());
@@ -50,6 +51,7 @@ export default function ResultsPage() {
     const filename = name.endsWith(".ics") ? name : `${name}.ics`;
     downloadICS(icsString, filename);
     setShowExportDialog(false);
+    setHasExported(true);
     toast({
       title: "Exported",
       description: `${results.assignments.length} assignments downloaded as ${filename}`,
@@ -141,6 +143,23 @@ export default function ResultsPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {hasExported && hasResults && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col sm:flex-row items-center justify-between gap-4 border border-border rounded-md p-5 bg-muted/20"
+          >
+            <div>
+              <p className="text-sm font-medium text-foreground">Got more syllabi?</p>
+              <p className="text-sm text-muted-foreground">Upload another syllabus and export it too.</p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/")}>
+              <Plus className="w-4 h-4 mr-2" />
+              Upload another
+            </Button>
+          </motion.div>
+        )}
       </div>
 
       {/* Export filename dialog */}
