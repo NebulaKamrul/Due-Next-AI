@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { CalendarRange, Sun, Moon } from "lucide-react";
+import { CalendarRange, Sun, Moon, Linkedin, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme";
 
@@ -58,13 +58,34 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="border-t border-border/40 py-8">
-        <div className="max-w-4xl mx-auto px-6 sm:px-8 flex items-center justify-between">
-          <p className="text-xs text-muted-foreground/60 tracking-wide">
-            nebula kamrul
-          </p>
-          <p className="text-xs text-muted-foreground/40 tracking-wide font-mono">
-            &copy; {new Date().getFullYear()}
+      <footer className="border-t border-border/40 py-10">
+        <div className="max-w-4xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <CalendarRange className="w-4 h-4 text-primary/60" />
+            <span className="font-display text-sm text-foreground/70">DueNext</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <a
+              href="https://www.linkedin.com/in/nebulakamrul/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground/50 hover:text-foreground transition-colors"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-4 h-4" />
+            </a>
+            <a
+              href="mailto:nebulakamrul@gmail.com"
+              className="text-muted-foreground/50 hover:text-foreground transition-colors"
+              aria-label="Email"
+            >
+              <Mail className="w-4 h-4" />
+            </a>
+          </div>
+
+          <p className="text-xs text-muted-foreground/40 tracking-wide">
+            built by nebula kamrul &middot; &copy; {new Date().getFullYear()}
           </p>
         </div>
       </footer>
