@@ -1,3 +1,4 @@
+import { useLocation } from "wouter";
 import { ExternalLink } from "lucide-react";
 import { Layout } from "@/components/Layout";
 
@@ -48,6 +49,8 @@ const steps = [
 ];
 
 export default function HowToImportPage() {
+  const [, navigate] = useLocation();
+
   return (
     <Layout>
       <div className="max-w-2xl mx-auto flex flex-col gap-10">
@@ -80,6 +83,16 @@ export default function HowToImportPage() {
         <div className="bg-muted/30 border border-border p-4 text-sm text-muted-foreground">
           <strong>Note:</strong> Google Calendar's mobile app does not support .ics imports. You must do this from a desktop or laptop browser.
         </div>
+
+        <p className="text-sm text-muted-foreground text-center pb-4">
+          Got another syllabus?{" "}
+          <button
+            onClick={() => navigate("/")}
+            className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+          >
+            Click here to upload.
+          </button>
+        </p>
       </div>
     </Layout>
   );
