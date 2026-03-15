@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useExtractDueDates } from "@workspace/api-client-react";
+import { CalendarRange, BookOpen, Clock, Sparkles, FileText } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { SyllabusForm } from "@/components/SyllabusForm";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +37,91 @@ function TypeWriter({ text, delay = 0, className = "" }: { text: string; delay?:
         <span className="animate-pulse ml-[1px]">|</span>
       )}
     </span>
+  );
+}
+
+const loadingMessages = [
+  { text: "Reading your syllabus...", icon: FileText },
+  { text: "Scanning for deadlines...", icon: BookOpen },
+  { text: "Identifying assignments...", icon: Clock },
+  { text: "Organizing your schedule...", icon: CalendarRange },
+  { text: "Almost there...", icon: Sparkles },
+];
+
+function ExtractionLoader() {
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+    }, 2400);
+    return () => clearInterval(interval);
+  }, []);
+
+  const current = loadingMessages[messageIndex];
+  const Icon = current.icon;
+
+  return (
+    <motion.div
+      className="flex flex-col items-center justify-center py-24 gap-10"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="relative">
+        <motion.div
+          className="w-24 h-24 rounded-full border-2 border-primary/20"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute inset-0 w-24 h-24 rounded-full border-2 border-transparent border-t-primary"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={messageIndex}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Icon className="w-8 h-8 text-primary" />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-4">
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={messageIndex}
+            className="font-display text-2xl text-foreground font-medium"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {current.text}
+          </motion.p>
+        </AnimatePresence>
+        <p className="text-muted-foreground text-sm font-light">
+          This usually takes a few seconds
+        </p>
+      </div>
+
+      <div className="w-64 h-1 bg-muted rounded-full overflow-hidden">
+        <motion.div
+          className="h-full bg-primary rounded-full"
+          initial={{ width: "0%" }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 12, ease: "easeInOut" }}
+        />
+      </div>
+    </motion.div>
   );
 }
 
@@ -92,31 +178,43 @@ export default function UploadPage() {
     extractMutation.mutate({ data: { text } });
   };
 
+  const isPending = extractMutation.isPending;
+
   return (
     <Layout>
-      <motion.div
-        className="max-w-3xl mx-auto flex flex-col gap-14"
-        variants={containerVars}
-        initial="hidden"
-        animate="show"
-      >
-        <motion.div className="space-y-5 pt-4" variants={fadeUp}>
-          <h1 className="font-display text-5xl sm:text-6xl font-semibold tracking-tight text-foreground leading-[1.08]">
-            Upload your syllabus and we'll tell you what's{" "}
-            <TypeWriter text="due next." delay={600} className="text-primary italic" />
-          </h1>
-          <motion.p
-            className="text-muted-foreground text-xl leading-relaxed max-w-lg font-light"
-            variants={fadeUp}
+      <AnimatePresence mode="wait">
+        {isPending ? (
+          <motion.div key="loader" className="max-w-3xl mx-auto">
+            <ExtractionLoader />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="form"
+            className="max-w-3xl mx-auto flex flex-col gap-14"
+            variants={containerVars}
+            initial="hidden"
+            animate="show"
+            exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }}
           >
-            Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar.
-          </motion.p>
-        </motion.div>
+            <motion.div className="space-y-5 pt-4" variants={fadeUp}>
+              <h1 className="font-display text-5xl sm:text-6xl font-semibold tracking-tight text-foreground leading-[1.08]">
+                Upload your syllabus and we'll tell you what's{" "}
+                <TypeWriter text="due next." delay={600} className="text-primary italic" />
+              </h1>
+              <motion.p
+                className="text-muted-foreground text-xl leading-relaxed max-w-lg font-light"
+                variants={fadeUp}
+              >
+                Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar.
+              </motion.p>
+            </motion.div>
 
-        <motion.div variants={fadeUpSlow}>
-          <SyllabusForm onSubmit={handleExtract} isPending={extractMutation.isPending} />
-        </motion.div>
-      </motion.div>
+            <motion.div variants={fadeUpSlow}>
+              <SyllabusForm onSubmit={handleExtract} isPending={isPending} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Layout>
   );
 }
