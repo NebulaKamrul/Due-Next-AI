@@ -111,7 +111,7 @@ export default function UploadPage() {
           >
             Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar —{" "}
             <motion.span
-              className="font-display italic text-primary"
+              className="font-display italic text-primary font-bold"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", damping: 20, stiffness: 80, delay: 1.2 }}
