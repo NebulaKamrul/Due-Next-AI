@@ -113,7 +113,7 @@ export default function ResultsPage() {
         <motion.div variants={headerVars} className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border pb-6">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Extracted Assignments</h1>
+              <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Your Assignments</h1>
               <AnimatePresence>
                 {showSuccess && hasResults && (
                   <motion.div
@@ -150,8 +150,8 @@ export default function ResultsPage() {
                   </span>
                 )}
                 {results?.courseName && <span className="text-muted-foreground">&middot;</span>}
-                <span className="text-sm text-muted-foreground">
-                  {results.assignments.length} assignments found
+                <span className="text-sm text-muted-foreground font-light">
+                  {results.assignments.length} {results.assignments.length === 1 ? "deadline" : "deadlines"} extracted
                 </span>
               </div>
             )}
@@ -204,13 +204,13 @@ export default function ResultsPage() {
               animate={{ opacity: 1 }}
               className="flex flex-col items-start py-12"
             >
-              <h3 className="text-lg font-medium mb-2 text-foreground">No assignments extracted</h3>
-              <p className="text-muted-foreground text-base max-w-sm mb-6">
-                Go back and paste your syllabus text to extract dates.
+              <h3 className="font-display text-xl font-medium mb-2 text-foreground">Nothing here yet</h3>
+              <p className="text-muted-foreground text-base max-w-sm mb-6 font-light leading-relaxed">
+                Upload a syllabus and we'll extract every deadline for you.
               </p>
               <Button variant="outline" onClick={() => navigate("/")}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Upload
+                Upload a Syllabus
               </Button>
             </motion.div>
           )}
@@ -223,12 +223,12 @@ export default function ResultsPage() {
             className="flex flex-col sm:flex-row items-center justify-between gap-4 border border-border rounded-md p-5 bg-muted/20"
           >
             <div>
-              <p className="text-sm font-medium text-foreground">Got more syllabi?</p>
-              <p className="text-sm text-muted-foreground">Upload another syllabus and export it too.</p>
+              <p className="text-sm font-medium text-foreground">Have another syllabus?</p>
+              <p className="text-sm text-muted-foreground font-light">Upload it and we'll extract those deadlines too.</p>
             </div>
             <Button variant="outline" onClick={() => navigate("/")}>
               <Plus className="w-4 h-4 mr-2" />
-              Upload another
+              Upload Another
             </Button>
           </motion.div>
         )}
@@ -237,7 +237,7 @@ export default function ResultsPage() {
       <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Export filename</DialogTitle>
+            <DialogTitle className="font-display">Name Your Export</DialogTitle>
           </DialogHeader>
           <div className="flex items-center gap-2">
             <Input
@@ -288,9 +288,9 @@ export default function ResultsPage() {
               </svg>
             </motion.div>
             <div className="space-y-1">
-              <DialogTitle className="text-lg">File downloaded!</DialogTitle>
-              <p className="text-sm text-muted-foreground">
-                No idea how to import a .ics file into your calendar?
+              <DialogTitle className="font-display text-lg">You're all set.</DialogTitle>
+              <p className="text-sm text-muted-foreground font-light">
+                Need help importing the file into your calendar?
               </p>
             </div>
             <div className="flex flex-col gap-2 w-full pt-2">
@@ -301,7 +301,7 @@ export default function ResultsPage() {
                   navigate("/how-to-import");
                 }}
               >
-                Show me how
+                Show Me How
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Button
@@ -309,7 +309,7 @@ export default function ResultsPage() {
                 className="w-full text-muted-foreground"
                 onClick={() => setShowPostExportDialog(false)}
               >
-                I know what I'm doing
+                I've got it, thanks
               </Button>
             </div>
           </div>

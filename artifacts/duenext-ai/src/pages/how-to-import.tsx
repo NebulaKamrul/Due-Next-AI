@@ -4,19 +4,19 @@ import { Layout } from "@/components/Layout";
 
 const steps = [
   {
-    title: "Export the .ics file",
+    title: "Export your .ics file",
     body: (
       <>
-        Go to the <strong>Results</strong> page and click <strong>Export .ics</strong>. 
-        A file will download to your computer.
+        Head to the <strong>Results</strong> page and tap <strong>Export .ics</strong>. 
+        The file will save to your device instantly.
       </>
     ),
   },
   {
-    title: "Open Google Calendar Settings",
+    title: "Open Google Calendar",
     body: (
       <>
-        Go to{" "}
+        Navigate to{" "}
         <a
           href="https://calendar.google.com"
           target="_blank"
@@ -25,24 +25,24 @@ const steps = [
         >
           calendar.google.com <ExternalLink className="w-3 h-3" />
         </a>{" "}
-        on a desktop browser. Click the gear icon in the top right, then select <strong>Settings</strong>.
+        on a desktop browser. Open the gear icon, then select <strong>Settings</strong>.
       </>
     ),
   },
   {
-    title: 'Go to "Import & Export"',
+    title: "Import & Export",
     body: (
       <>
-        In the left sidebar, click <strong>Import &amp; Export</strong>. Then click{" "}
-        <strong>Select file from your computer</strong> and choose your downloaded <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.ics</code> file.
+        In the left sidebar, select <strong>Import &amp; Export</strong>. Choose{" "}
+        <strong>Select file from your computer</strong> and pick your <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.ics</code> file.
       </>
     ),
   },
   {
-    title: "Choose a calendar and import",
+    title: "Select your calendar",
     body: (
       <>
-        Pick which of your calendars the events should go into, then click <strong>Import</strong>. Your assignments will appear as all-day events.
+        Choose which calendar the events belong to, then hit <strong>Import</strong>. Your deadlines will appear right on your calendar.
       </>
     ),
   },
@@ -56,10 +56,10 @@ export default function HowToImportPage() {
       <div className="max-w-2xl mx-auto flex flex-col gap-10">
         <div className="space-y-4 pt-8">
           <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
-            How to Import into Google Calendar
+            Import to Google Calendar
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Four quick steps to add extracted assignments to your calendar.
+          <p className="text-muted-foreground text-lg leading-relaxed font-light">
+            Four simple steps to get your deadlines where they belong.
           </p>
         </div>
 
@@ -73,24 +73,24 @@ export default function HowToImportPage() {
                 0{i + 1}
               </div>
               <div className="space-y-2">
-                <h3 className="font-medium text-foreground">{title}</h3>
-                <p className="text-base text-muted-foreground leading-relaxed max-w-lg">{body}</p>
+                <h3 className="font-display font-medium text-foreground">{title}</h3>
+                <p className="text-base text-muted-foreground leading-relaxed max-w-lg font-light">{body}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="bg-muted/30 border border-border p-4 text-sm text-muted-foreground">
-          <strong>Note:</strong> Google Calendar's mobile app does not support .ics imports. You must do this from a desktop or laptop browser.
+        <div className="bg-muted/30 border border-border rounded-md p-4 text-sm text-muted-foreground font-light">
+          <strong className="font-medium">Please note —</strong> Google Calendar's mobile app doesn't support .ics imports. Use a desktop browser for this step.
         </div>
 
-        <p className="text-sm text-muted-foreground text-center pb-4">
-          Got another syllabus?{" "}
+        <p className="text-sm text-muted-foreground text-center pb-4 font-light">
+          Have another syllabus?{" "}
           <button
             onClick={() => navigate("/")}
-            className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+            className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors font-medium"
           >
-            Click here to upload.
+            Upload it here.
           </button>
         </p>
       </div>

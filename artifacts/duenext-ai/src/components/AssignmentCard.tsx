@@ -53,14 +53,14 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
       <div className="flex flex-col gap-3 p-5">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
-            <label className="text-xs text-muted-foreground mb-1 block">Name</label>
+            <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Name</label>
             <Input
               value={draft.name}
               onChange={(e) => setDraft({ ...draft, name: e.target.value })}
             />
           </div>
           <div className="w-full sm:w-40">
-            <label className="text-xs text-muted-foreground mb-1 block">Weight</label>
+            <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Weight</label>
             <Input
               value={draft.weight ?? ""}
               onChange={(e) => setDraft({ ...draft, weight: e.target.value || null })}
@@ -71,7 +71,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
 
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="w-full sm:w-44">
-            <label className="text-xs text-muted-foreground mb-1 block">Due date</label>
+            <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Due Date</label>
             <Input
               type="date"
               value={draft.dueDate}
@@ -79,7 +79,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
             />
           </div>
           <div className="w-full sm:w-36">
-            <label className="text-xs text-muted-foreground mb-1 block">Due time</label>
+            <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Due Time</label>
             <Input
               type="time"
               value={draft.dueTime ?? ""}
@@ -87,7 +87,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
             />
           </div>
           <div className="flex-1">
-            <label className="text-xs text-muted-foreground mb-1 block">Type</label>
+            <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Type</label>
             <select
               value={draft.type ?? "assignment"}
               onChange={(e) => setDraft({ ...draft, type: e.target.value as AssignmentType })}
@@ -102,7 +102,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
 
         {isActivity && (
           <div className="w-full sm:w-36">
-            <label className="text-xs text-muted-foreground mb-1 block">Activity time</label>
+            <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Activity Time</label>
             <Input
               type="time"
               value={draft.activityTime ?? ""}
@@ -112,7 +112,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
         )}
 
         <div className="flex-1">
-          <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+          <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Description</label>
           <Input
             value={draft.description ?? ""}
             onChange={(e) => setDraft({ ...draft, description: e.target.value || null })}
@@ -121,7 +121,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
         </div>
 
         <div>
-          <label className="text-xs text-muted-foreground mb-2 block">Calendar color</label>
+          <label className="text-[11px] text-muted-foreground/70 mb-2 block uppercase tracking-wider font-medium">Calendar Color</label>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
@@ -242,7 +242,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
       {showColorApply && colorHex && (
         <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
           <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: colorHex }} />
-          <span className="text-xs text-muted-foreground mr-1">Apply this color to:</span>
+          <span className="text-xs text-muted-foreground/70 mr-1 font-light">Apply to:</span>
           <Button
             size="sm"
             variant="outline"
@@ -252,7 +252,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
               setShowColorApply(false);
             }}
           >
-            All assignments
+            Everything
           </Button>
           <Button
             size="sm"

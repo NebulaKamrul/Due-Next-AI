@@ -96,8 +96,8 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
         {/* Textarea */}
         <div className="relative border border-border rounded-lg bg-background overflow-hidden shadow-sm glow-focus transition-all duration-300">
           <Textarea
-            placeholder="Paste syllabus text here..."
-            className="min-h-[200px] w-full resize-none border-0 p-6 text-base bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/40 placeholder:italic rounded-none shadow-none"
+            placeholder="Paste your syllabus text here…"
+            className="min-h-[200px] w-full resize-none border-0 p-6 text-base leading-relaxed bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/40 placeholder:italic placeholder:font-light rounded-none shadow-none"
             value={text}
             onChange={(e) => setText(e.target.value)}
             disabled={isPending || isProcessingPdf}
@@ -150,11 +150,11 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
               <Upload className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="text-center">
-              <p className="text-sm font-medium text-foreground/70">
-                {isProcessingPdf ? "Reading PDF..." : "Drop a PDF here"}
+              <p className="text-sm font-medium text-foreground/70 tracking-wide">
+                {isProcessingPdf ? "Reading your PDF…" : "Drop a PDF here"}
               </p>
               {!isProcessingPdf && (
-                <p className="text-xs text-muted-foreground/50 mt-0.5">or click to browse files</p>
+                <p className="text-xs text-muted-foreground/50 mt-0.5 font-light">or click to browse your files</p>
               )}
             </div>
           </div>
@@ -185,11 +185,11 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
           {isPending ? (
             <>
               <div className="w-3.5 h-3.5 mr-2 border-2 border-background/30 border-t-background rounded-full animate-spin" />
-              Extracting
+              Extracting…
             </>
           ) : (
             <>
-              Extract Dates
+              Extract Deadlines
               <ArrowRight className="w-4 h-4 ml-2" />
             </>
           )}

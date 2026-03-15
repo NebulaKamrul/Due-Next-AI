@@ -80,8 +80,8 @@ export default function UploadPage() {
       },
       onError: (error) => {
         toast({
-          title: "Extraction Failed",
-          description: error.message || "Couldn't extract due dates. Please try again.",
+          title: "Something went wrong",
+          description: error.message || "We couldn't extract the dates. Please try again.",
           variant: "destructive",
         });
       },
@@ -106,10 +106,10 @@ export default function UploadPage() {
             <TypeWriter text="due next." delay={600} className="text-primary italic" />
           </h1>
           <motion.p
-            className="text-muted-foreground text-lg leading-relaxed max-w-md"
+            className="text-muted-foreground text-lg leading-relaxed max-w-md font-light"
             variants={fadeUp}
           >
-            Paste text or drop a PDF. We'll find every assignment and format it for your calendar.
+            Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar — effortlessly.
           </motion.p>
         </motion.div>
 
