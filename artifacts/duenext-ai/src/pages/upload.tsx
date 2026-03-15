@@ -43,27 +43,25 @@ const containerVars = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.08 },
+    transition: { staggerChildren: 0.18, delayChildren: 0.05 },
   },
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24, filter: "blur(10px)" },
+  hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { type: "spring", damping: 28, stiffness: 100 },
+    transition: { type: "spring" as const, damping: 30, stiffness: 90 },
   },
 };
 
 const fadeUpSlow = {
-  hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 28 },
   show: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { type: "spring", damping: 22, stiffness: 70, delay: 0.35 },
+    transition: { type: "spring" as const, damping: 24, stiffness: 65, delay: 0.3 },
   },
 };
 

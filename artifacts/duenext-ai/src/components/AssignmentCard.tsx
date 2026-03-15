@@ -159,7 +159,7 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-5 group">
+    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-5 group glass-card rounded-lg">
       <div className="flex-1 flex gap-3">
         {colorHex && (
           <div

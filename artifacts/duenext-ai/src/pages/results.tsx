@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, ArrowLeft, Plus, CheckCircle2, ArrowRight } from "lucide-react";
+import { Download, ArrowLeft, Plus, ArrowRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
@@ -13,11 +13,19 @@ import { loadResults, clearResults, saveResults, StoredResults, EditableAssignme
 
 const containerVars = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.04 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
 };
 const itemVars = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { type: "tween", ease: "easeOut", duration: 0.2 } },
+  hidden: { opacity: 0, y: 12 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", damping: 25, stiffness: 120 } as const,
+  },
+};
+const headerVars = {
+  hidden: { opacity: 0, y: -8 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", damping: 25, stiffness: 100 } },
 };
 
 export default function ResultsPage() {
@@ -28,9 +36,12 @@ export default function ResultsPage() {
   const [exportFilename, setExportFilename] = useState("");
   const [hasExported, setHasExported] = useState(false);
   const [showPostExportDialog, setShowPostExportDialog] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(true);
 
   useEffect(() => {
     setResults(loadResults());
+    const t = setTimeout(() => setShowSuccess(false), 1800);
+    return () => clearTimeout(t);
   }, []);
 
   const defaultFilename = () => {
@@ -74,11 +85,45 @@ export default function ResultsPage() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-8">
+      <motion.div
+        className="flex flex-col gap-8"
+        initial="hidden"
+        animate="show"
+        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.12 } } }}
+      >
         {/* Page header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border pb-6">
+        <motion.div variants={headerVars} className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border pb-6">
           <div className="space-y-1">
-            <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Extracted Assignments</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Extracted Assignments</h1>
+              <AnimatePresence>
+                {showSuccess && hasResults && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                  >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-green-500">
+                      <motion.circle
+                        cx="12" cy="12" r="10"
+                        stroke="currentColor" strokeWidth="1.5" fill="none"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.5 }}
+                      />
+                      <motion.path
+                        d="M8 12l3 3 5-6"
+                        stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.4, delay: 0.3 }}
+                      />
+                    </svg>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             {hasResults && (
               <div className="flex items-center gap-3 pt-1">
                 {results?.courseName && (
@@ -99,13 +144,19 @@ export default function ResultsPage() {
               <Button variant="ghost" onClick={handleClear} className="text-muted-foreground">
                 Clear
               </Button>
-              <Button onClick={openExportDialog}>
-                <Download className="w-4 h-4 mr-2" />
-                Export .ics
-              </Button>
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              >
+                <Button onClick={openExportDialog}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export .ics
+                </Button>
+              </motion.div>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Content */}
         <AnimatePresence mode="wait">
@@ -115,7 +166,7 @@ export default function ResultsPage() {
               variants={containerVars}
               initial="hidden"
               animate="show"
-              className="flex flex-col gap-px bg-border border border-border rounded-md overflow-hidden"
+              className="flex flex-col gap-px bg-border border border-border rounded-md"
             >
               {results.assignments.map((assignment, idx) => (
                 <motion.div key={`${assignment.name}-${idx}`} variants={itemVars} className="bg-background">
@@ -158,9 +209,8 @@ export default function ResultsPage() {
             </Button>
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
-      {/* Export filename dialog */}
       <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -192,7 +242,28 @@ export default function ResultsPage() {
       <Dialog open={showPostExportDialog} onOpenChange={setShowPostExportDialog}>
         <DialogContent className="sm:max-w-sm text-center">
           <div className="flex flex-col items-center gap-4 pt-2">
-            <CheckCircle2 className="w-10 h-10 text-primary" />
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", damping: 12, stiffness: 150, delay: 0.1 }}
+            >
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="text-primary">
+                <motion.circle
+                  cx="12" cy="12" r="10"
+                  stroke="currentColor" strokeWidth="1.5" fill="none"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.6 }}
+                />
+                <motion.path
+                  d="M8 12l3 3 5-6"
+                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.4, delay: 0.4 }}
+                />
+              </svg>
+            </motion.div>
             <div className="space-y-1">
               <DialogTitle className="text-lg">File downloaded!</DialogTitle>
               <p className="text-sm text-muted-foreground">

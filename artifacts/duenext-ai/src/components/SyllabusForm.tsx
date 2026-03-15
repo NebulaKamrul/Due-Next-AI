@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { motion } from "framer-motion";
 import { ArrowRight, Upload, X, File as FileIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -93,7 +94,7 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3">
         {/* Textarea */}
-        <div className="relative border border-border rounded-lg bg-background overflow-hidden shadow-sm transition-shadow focus-within:shadow-md focus-within:border-primary/30">
+        <div className="relative border border-border rounded-lg bg-background overflow-hidden shadow-sm glow-focus transition-all duration-300">
           <Textarea
             placeholder="Paste syllabus text here..."
             className="min-h-[200px] w-full resize-none border-0 p-6 text-base bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/40 placeholder:italic rounded-none shadow-none"
@@ -160,24 +161,40 @@ export function SyllabusForm({ onSubmit, isPending }: SyllabusFormProps) {
         )}
       </div>
 
+      {/* Shimmer loading */}
+      {isPending && (
+        <div className="flex flex-col gap-2">
+          <div className="h-3 w-3/4 rounded shimmer-skeleton" />
+          <div className="h-3 w-1/2 rounded shimmer-skeleton" />
+          <div className="h-3 w-2/3 rounded shimmer-skeleton" />
+        </div>
+      )}
+
       {/* Submit */}
-      <Button
-        onClick={handleSubmit}
-        disabled={!text.trim() || isPending || isProcessingPdf}
+      <motion.div
         className="w-full sm:w-auto self-end"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
       >
-        {isPending ? (
-          <>
-            <div className="w-3.5 h-3.5 mr-2 border-2 border-background/30 border-t-background rounded-full animate-spin" />
-            Extracting
-          </>
-        ) : (
-          <>
-            Extract Dates
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </>
-        )}
-      </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={!text.trim() || isPending || isProcessingPdf}
+          className="w-full"
+        >
+          {isPending ? (
+            <>
+              <div className="w-3.5 h-3.5 mr-2 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+              Extracting
+            </>
+          ) : (
+            <>
+              Extract Dates
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </>
+          )}
+        </Button>
+      </motion.div>
     </div>
   );
 }

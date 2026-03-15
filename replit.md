@@ -91,6 +91,17 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
 
+### `artifacts/duenext-ai` (`@workspace/duenext-ai`)
+
+React + Vite web app for AI-powered syllabus parsing. Students paste or upload a PDF syllabus, AI extracts assignments/due dates, and they can export to Google Calendar as `.ics`.
+
+- **Stack**: React, Vite, Tailwind CSS, Framer Motion, Wouter (routing), pdfjs-dist
+- **AI**: Uses `gpt-4o-mini` via api-server for assignment extraction
+- **Design**: Luxury SaaS aesthetic — Playfair Display serif headings, warm cream/amber palette, frosted glass header
+- **Animations**: Framer Motion spring-based fade-up stagger on page load, magnetic hover on buttons, shimmer skeleton loading during extraction, animated success checkmark on results, glass-card hover lift on assignment cards, glowing focus on input fields
+- **Features**: Inline assignment editing (name, weight, date, time, type, Google Calendar color), `.ics` export with timed events and color support, dark mode, localStorage persistence
+- **Pages**: Upload (`/`), Results (`/results`), How to Import (`/how-to-import`)
+
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
