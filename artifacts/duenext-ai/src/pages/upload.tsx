@@ -108,9 +108,7 @@ export default function UploadPage() {
           <motion.p
             className="text-muted-foreground text-lg leading-relaxed max-w-md font-light"
             variants={fadeUp}
-          >
-            Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar — effortlessly.
-          </motion.p>
+          >Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar, effortlessly.</motion.p>
         </motion.div>
 
         <motion.div variants={fadeUpSlow}>
