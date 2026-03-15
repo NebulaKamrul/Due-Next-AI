@@ -16,7 +16,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
-        <div className="max-w-4xl mx-auto px-6 sm:px-8">
+        <div className="max-w-5xl mx-auto px-6 sm:px-10">
           <div className="h-16 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <CalendarRange className="w-5 h-5 text-primary" />
@@ -54,12 +54,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 sm:px-8 py-16">
+      <main className="max-w-5xl mx-auto px-6 sm:px-10 py-16">
         {children}
       </main>
 
       <footer className="border-t border-border/40 py-10">
-        <div className="max-w-4xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-5xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <CalendarRange className="w-4 h-4 text-primary/60" />
             <span className="font-display text-sm text-foreground/70">DueNext<span className="text-primary/60">.ai</span></span>

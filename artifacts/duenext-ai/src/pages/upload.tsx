@@ -95,18 +95,18 @@ export default function UploadPage() {
   return (
     <Layout>
       <motion.div
-        className="max-w-2xl mx-auto flex flex-col gap-12"
+        className="max-w-3xl mx-auto flex flex-col gap-14"
         variants={containerVars}
         initial="hidden"
         animate="show"
       >
         <motion.div className="space-y-5 pt-4" variants={fadeUp}>
-          <h1 className="font-display text-4xl sm:text-5xl font-semibold tracking-tight text-foreground leading-[1.1]">
+          <h1 className="font-display text-5xl sm:text-6xl font-semibold tracking-tight text-foreground leading-[1.08]">
             Upload your syllabus and we'll tell you what's{" "}
             <TypeWriter text="due next." delay={600} className="text-primary italic" />
           </h1>
           <motion.p
-            className="text-muted-foreground text-lg leading-relaxed max-w-md font-light"
+            className="text-muted-foreground text-xl leading-relaxed max-w-lg font-light"
             variants={fadeUp}
           >
             Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar, {" "}
