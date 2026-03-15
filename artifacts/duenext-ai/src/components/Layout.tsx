@@ -5,7 +5,7 @@ import { useTheme } from "@/lib/theme";
 
 const navItems = [
   { href: "/", label: "Upload" },
-  { href: "/results", label: "Results" },
+  { href: "/results", label: "Deadlines" },
   { href: "/how-to-import", label: "How to Import" },
 ];
 
