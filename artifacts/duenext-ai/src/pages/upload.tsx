@@ -210,7 +210,7 @@ export default function UploadPage() {
                   className="font-display italic font-bold text-primary"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ type: "spring", damping: 18, stiffness: 80, delay: 1.0 }}
+                  transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
                 >
                   seconds.
                 </motion.span>
