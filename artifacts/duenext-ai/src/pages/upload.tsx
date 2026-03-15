@@ -109,15 +109,7 @@ export default function UploadPage() {
             className="text-muted-foreground text-xl leading-relaxed max-w-lg font-light"
             variants={fadeUp}
           >
-            Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar, {" "}
-            <motion.span
-              className="font-display italic text-primary font-bold"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", damping: 20, stiffness: 80, delay: 1.2 }}
-            >
-              effortlessly.
-            </motion.span>
+            Paste your syllabus or drop a PDF. We'll extract every deadline and format it for your calendar.
           </motion.p>
         </motion.div>
 
