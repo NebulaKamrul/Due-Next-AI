@@ -8,11 +8,14 @@ import { EditableAssignment, CALENDAR_COLORS } from "@/lib/store";
 interface AssignmentCardProps {
   assignment: EditableAssignment;
   onUpdate?: (updated: EditableAssignment) => void;
+  onApplyColorToAll?: (color: string | null) => void;
+  onApplyColorToType?: (color: string | null, type: string) => void;
 }
 
-export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
+export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onApplyColorToType }: AssignmentCardProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState({ ...assignment });
+  const [showColorApply, setShowColorApply] = useState(false);
 
   let formattedDate = assignment.dueDate;
   try {
@@ -34,8 +37,12 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
   };
 
   const saveEdit = () => {
+    const colorChanged = draft.color !== assignment.color && draft.color !== null;
     onUpdate?.(draft);
     setEditing(false);
+    if (colorChanged) {
+      setShowColorApply(true);
+    }
   };
 
   const isActivity = draft.type === "class-activity";
@@ -158,67 +165,109 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
     );
   }
 
+  const assignmentType = assignment.type ?? "assignment";
+  const typeLabel = assignmentType === "class-activity" ? "class activities" : "assignments";
+
   return (
-    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-5 group glass-card rounded-lg">
-      <div className="flex-1 flex gap-3">
-        {colorHex && (
-          <div
-            className="w-1 rounded-full shrink-0 mt-1"
-            style={{ backgroundColor: colorHex, minHeight: "1.25rem" }}
-          />
-        )}
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h3 className="text-base font-medium text-foreground">
-              {assignment.name}
-            </h3>
-            {assignment.type === "class-activity" && (
-              <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-                Activity
-              </span>
-            )}
-            {assignment.weight && (
-              <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                {assignment.weight}
-              </span>
+    <div className="flex flex-col p-5 group glass-card rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div className="flex-1 flex gap-3">
+          {colorHex && (
+            <div
+              className="w-1 rounded-full shrink-0 mt-1"
+              style={{ backgroundColor: colorHex, minHeight: "1.25rem" }}
+            />
+          )}
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h3 className="text-base font-medium text-foreground">
+                {assignment.name}
+              </h3>
+              {assignment.type === "class-activity" && (
+                <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                  Activity
+                </span>
+              )}
+              {assignment.weight && (
+                <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                  {assignment.weight}
+                </span>
+              )}
+            </div>
+
+            {assignment.description && (
+              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-3xl">
+                {assignment.description}
+              </p>
             )}
           </div>
-
-          {assignment.description && (
-            <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-3xl">
-              {assignment.description}
-            </p>
-          )}
         </div>
-      </div>
 
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="sm:text-right">
-          <span className="text-sm font-medium text-foreground">
-            {formattedDate}
-          </span>
-          {assignment.dueTime && (
-            <span className="text-sm text-muted-foreground ml-2">
-              {assignment.dueTime}
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="sm:text-right">
+            <span className="text-sm font-medium text-foreground">
+              {formattedDate}
             </span>
-          )}
-          {assignment.type === "class-activity" && assignment.activityTime && (
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Activity at {assignment.activityTime}
-            </p>
+            {assignment.dueTime && (
+              <span className="text-sm text-muted-foreground ml-2">
+                {assignment.dueTime}
+              </span>
+            )}
+            {assignment.type === "class-activity" && assignment.activityTime && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Activity at {assignment.activityTime}
+              </p>
+            )}
+          </div>
+          {onUpdate && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground"
+              onClick={startEdit}
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </Button>
           )}
         </div>
-        {onUpdate && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground"
-            onClick={startEdit}
-          >
-            <Pencil className="w-3.5 h-3.5" />
-          </Button>
-        )}
       </div>
+
+      {showColorApply && colorHex && (
+        <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
+          <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: colorHex }} />
+          <span className="text-xs text-muted-foreground mr-1">Apply this color to:</span>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs px-2.5"
+            onClick={() => {
+              onApplyColorToAll?.(assignment.color ?? null);
+              setShowColorApply(false);
+            }}
+          >
+            All assignments
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs px-2.5"
+            onClick={() => {
+              onApplyColorToType?.(assignment.color ?? null, assignmentType);
+              setShowColorApply(false);
+            }}
+          >
+            All {typeLabel}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 text-xs px-2 text-muted-foreground"
+            onClick={() => setShowColorApply(false)}
+          >
+            Just this one
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

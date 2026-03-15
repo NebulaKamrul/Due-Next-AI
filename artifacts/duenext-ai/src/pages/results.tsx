@@ -76,6 +76,24 @@ export default function ResultsPage() {
     saveResults(newResults);
   };
 
+  const handleApplyColorToAll = (color: string | null) => {
+    if (!results) return;
+    const newAssignments = results.assignments.map((a) => ({ ...a, color }));
+    const newResults = { ...results, assignments: newAssignments };
+    setResults(newResults);
+    saveResults(newResults);
+  };
+
+  const handleApplyColorToType = (color: string | null, type: string) => {
+    if (!results) return;
+    const newAssignments = results.assignments.map((a) =>
+      (a.type ?? "assignment") === type ? { ...a, color } : a
+    );
+    const newResults = { ...results, assignments: newAssignments };
+    setResults(newResults);
+    saveResults(newResults);
+  };
+
   const handleClear = () => {
     clearResults();
     setResults(null);
@@ -170,7 +188,12 @@ export default function ResultsPage() {
             >
               {results.assignments.map((assignment, idx) => (
                 <motion.div key={`${assignment.name}-${idx}`} variants={itemVars} className="bg-background">
-                  <AssignmentCard assignment={assignment} onUpdate={(updated) => handleUpdateAssignment(idx, updated)} />
+                  <AssignmentCard
+                    assignment={assignment}
+                    onUpdate={(updated) => handleUpdateAssignment(idx, updated)}
+                    onApplyColorToAll={handleApplyColorToAll}
+                    onApplyColorToType={handleApplyColorToType}
+                  />
                 </motion.div>
               ))}
             </motion.div>
