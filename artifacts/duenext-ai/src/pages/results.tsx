@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, ArrowLeft, Plus, ArrowRight, Upload, Sparkles, CalendarRange } from "lucide-react";
+import { Download, ArrowLeft, Plus, ArrowRight, Upload, Sparkles, CalendarRange, X, Pencil, Palette, Tag } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,9 @@ export default function ResultsPage() {
   const [hasExported, setHasExported] = useState(false);
   const [showPostExportDialog, setShowPostExportDialog] = useState(false);
   const [showSuccess, setShowSuccess] = useState(true);
+  const [showTip, setShowTip] = useState(() => {
+    return localStorage.getItem("duenext_tip_dismissed") !== "true";
+  });
 
   useEffect(() => {
     setResults(loadResults());
@@ -175,6 +178,47 @@ export default function ResultsPage() {
             </div>
           )}
         </motion.div>
+
+        <AnimatePresence>
+          {hasResults && showTip && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 120 }}
+              className="overflow-hidden"
+            >
+              <div className="bg-primary/5 border border-primary/15 rounded-xl p-4 flex items-start gap-4">
+                <div className="flex-1 space-y-2">
+                  <p className="text-sm font-medium text-foreground">
+                    Tap any assignment to customize it
+                  </p>
+                  <div className="flex flex-wrap gap-x-5 gap-y-1">
+                    {[
+                      { icon: Pencil, text: "Edit title, date & weight" },
+                      { icon: Palette, text: "Pick a color" },
+                      { icon: Tag, text: "Set assignment type" },
+                    ].map(({ icon: Icon, text }) => (
+                      <span key={text} className="flex items-center gap-1.5 text-xs text-muted-foreground font-light">
+                        <Icon className="w-3 h-3 text-primary/60" />
+                        {text}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowTip(false);
+                    localStorage.setItem("duenext_tip_dismissed", "true");
+                  }}
+                  className="text-muted-foreground/60 hover:text-foreground transition-colors p-1"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Content */}
         <AnimatePresence mode="wait">
