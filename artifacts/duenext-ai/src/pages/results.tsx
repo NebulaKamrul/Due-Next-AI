@@ -368,7 +368,7 @@ export default function ResultsPage() {
             <div className="space-y-1">
               <DialogTitle className="font-display text-lg">You're all set.</DialogTitle>
               <p className="text-sm text-muted-foreground font-light">
-                Need help importing the file into your calendar?
+                Need help importing the file into your calendar? I got you.
               </p>
             </div>
             <div className="flex flex-col gap-2 w-full pt-2">
