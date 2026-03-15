@@ -1,9 +1,10 @@
 import { useLocation } from "wouter";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Download, Globe, Upload, CalendarCheck } from "lucide-react";
 import { Layout } from "@/components/Layout";
 
 const steps = [
   {
+    icon: Download,
     title: "Export your .ics file",
     body: (
       <>
@@ -13,6 +14,7 @@ const steps = [
     ),
   },
   {
+    icon: Globe,
     title: "Open Google Calendar",
     body: (
       <>
@@ -30,6 +32,7 @@ const steps = [
     ),
   },
   {
+    icon: Upload,
     title: "Import & Export",
     body: (
       <>
@@ -39,6 +42,7 @@ const steps = [
     ),
   },
   {
+    icon: CalendarCheck,
     title: "Select your calendar",
     body: (
       <>
@@ -64,13 +68,13 @@ export default function HowToImportPage() {
         </div>
 
         <div className="flex flex-col">
-          {steps.map(({ title, body }, i) => (
+          {steps.map(({ icon: Icon, title, body }, i) => (
             <div
               key={i}
-              className="flex gap-6 py-6 border-b border-border last:border-0"
+              className="flex gap-5 py-6 border-b border-border last:border-0"
             >
-              <div className="text-sm font-mono text-muted-foreground pt-0.5">
-                0{i + 1}
+              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <Icon className="w-4 h-4 text-primary" />
               </div>
               <div className="space-y-2">
                 <h3 className="font-display font-medium text-foreground">{title}</h3>
