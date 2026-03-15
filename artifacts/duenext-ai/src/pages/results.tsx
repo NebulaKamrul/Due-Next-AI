@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, ArrowLeft, Plus, ArrowRight } from "lucide-react";
+import { Download, ArrowLeft, Plus, ArrowRight, Upload, Sparkles, CalendarRange } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
@@ -200,18 +200,52 @@ export default function ResultsPage() {
           ) : (
             <motion.div
               key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-start py-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 80 }}
+              className="flex flex-col items-center text-center py-16 gap-10"
             >
-              <h3 className="font-display text-xl font-medium mb-2 text-foreground">Nothing here yet</h3>
-              <p className="text-muted-foreground text-base max-w-sm mb-6 font-light leading-relaxed">
-                Upload a syllabus and we'll extract every deadline for you.
-              </p>
-              <Button variant="outline" onClick={() => navigate("/")}>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Upload a Syllabus
-              </Button>
+              <div className="space-y-4">
+                <h3 className="font-display text-3xl sm:text-4xl font-semibold text-foreground">No deadlines yet</h3>
+                <p className="text-muted-foreground text-lg max-w-md mx-auto font-light leading-relaxed">
+                  Upload your syllabus and we'll pull out every assignment and due date automatically.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
+                {[
+                  { icon: Upload, label: "Upload syllabus" },
+                  { icon: Sparkles, label: "AI extracts dates" },
+                  { icon: CalendarRange, label: "Export to calendar" },
+                ].map(({ icon: Icon, label }, i) => (
+                  <motion.div
+                    key={label}
+                    className="flex items-center gap-3"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + i * 0.15 }}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Icon className="w-4.5 h-4.5 text-primary" />
+                    </div>
+                    <span className="text-sm text-muted-foreground font-light">{label}</span>
+                    {i < 2 && (
+                      <ArrowRight className="w-4 h-4 text-muted-foreground/40 hidden sm:block ml-4" />
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
+                <Button onClick={() => navigate("/")} size="lg" className="gap-2">
+                  <Upload className="w-4 h-4" />
+                  Upload a Syllabus
+                </Button>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
