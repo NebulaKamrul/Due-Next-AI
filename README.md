@@ -93,7 +93,7 @@ pnpm run dev
 
 ## Live Demo
 
-(Add your Replit deployment link here)
+https://duenextai.replit.app/
 
 ---
 
