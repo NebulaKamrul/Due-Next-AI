@@ -165,7 +165,7 @@ export default function HowToImportPage() {
           whileHover={{ scale: 1.01 }}
           transition={{ type: "spring", damping: 30, stiffness: 200 }}
         >
-          <strong className="font-medium">Please note —</strong> Google Calendar's mobile app doesn't support .ics imports. Use a desktop browser for this step.
+          <strong className="font-medium">Please note:</strong> Google Calendar's mobile app doesn't support .ics imports. Use a desktop browser for this step.
         </motion.div>
 
         <motion.p
