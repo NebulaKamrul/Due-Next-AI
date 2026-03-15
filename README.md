@@ -2,9 +2,10 @@
 
 **DueNext.ai** is an AI-powered syllabus deadline extractor.
 
-Paste your syllabus or upload a PDF, and DueNext automatically extracts every assignment and due date — then exports everything to Google Calendar as an `.ics` file.
+Paste your syllabus or upload a PDF, and DueNext automatically extracts every assignment and due date,
+then exports everything to Google Calendar as an `.ics` file.
 
-Students no longer need to manually scan long syllabi or miss deadlines buried in course documents.
+Students no longer need to manually scan long syllabi or miss deadlines buried in course documents. 
 
 ---
 
