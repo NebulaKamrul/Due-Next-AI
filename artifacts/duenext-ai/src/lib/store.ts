@@ -18,10 +18,24 @@ export const CALENDAR_COLORS = [
 
 export type CalendarColor = typeof CALENDAR_COLORS[number];
 
+export const ASSIGNMENT_TYPES = [
+  { value: "assignment", label: "Assignment" },
+  { value: "quiz", label: "Quiz" },
+  { value: "test", label: "Test" },
+  { value: "exam", label: "Exam" },
+  { value: "midterm", label: "Midterm" },
+  { value: "final", label: "Final" },
+  { value: "practical", label: "Practical" },
+  { value: "class-activity", label: "Class Activity" },
+  { value: "other", label: "Other" },
+] as const;
+
+export type AssignmentType = typeof ASSIGNMENT_TYPES[number]["value"];
+
 export interface EditableAssignment extends Assignment {
   dueTime?: string | null;
   activityTime?: string | null;
-  type?: "assignment" | "class-activity";
+  type?: AssignmentType;
   color?: string | null;
 }
 

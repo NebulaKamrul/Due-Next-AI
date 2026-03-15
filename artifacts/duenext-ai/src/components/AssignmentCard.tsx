@@ -3,7 +3,7 @@ import { format, parseISO, isValid } from "date-fns";
 import { Pencil, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { EditableAssignment, CALENDAR_COLORS } from "@/lib/store";
+import { EditableAssignment, CALENDAR_COLORS, ASSIGNMENT_TYPES, AssignmentType } from "@/lib/store";
 
 interface AssignmentCardProps {
   assignment: EditableAssignment;
@@ -90,11 +90,12 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
             <label className="text-xs text-muted-foreground mb-1 block">Type</label>
             <select
               value={draft.type ?? "assignment"}
-              onChange={(e) => setDraft({ ...draft, type: e.target.value as "assignment" | "class-activity" })}
+              onChange={(e) => setDraft({ ...draft, type: e.target.value as AssignmentType })}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
-              <option value="assignment">Assignment</option>
-              <option value="class-activity">Class Activity</option>
+              {ASSIGNMENT_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -166,7 +167,13 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
   }
 
   const assignmentType = assignment.type ?? "assignment";
-  const typeLabel = assignmentType === "class-activity" ? "class activities" : "assignments";
+  const typeInfo = ASSIGNMENT_TYPES.find((t) => t.value === assignmentType);
+  const typeLabel = typeInfo?.label ?? "Assignment";
+  const typeLabelPlural = assignmentType === "class-activity" ? "class activities"
+    : assignmentType === "quiz" ? "quizzes"
+    : assignmentType === "practical" ? "practicals"
+    : assignmentType === "other" ? "others"
+    : `${typeLabel.toLowerCase()}s`;
 
   return (
     <div className="flex flex-col p-5 group glass-card rounded-lg">
@@ -183,9 +190,9 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
               <h3 className="text-base font-medium text-foreground">
                 {assignment.name}
               </h3>
-              {assignment.type === "class-activity" && (
+              {assignmentType !== "assignment" && (
                 <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-                  Activity
+                  {typeLabel}
                 </span>
               )}
               {assignment.weight && (
@@ -256,7 +263,7 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
               setShowColorApply(false);
             }}
           >
-            All {typeLabel}
+            All {typeLabelPlural}
           </Button>
           <Button
             size="sm"
