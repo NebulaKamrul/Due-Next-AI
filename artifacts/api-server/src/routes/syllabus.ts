@@ -22,7 +22,7 @@ router.post("/extract", async (req, res) => {
     const currentYear = new Date().getFullYear();
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gemini-2.0-flash",
       max_completion_tokens: 4096,
       messages: [
         {
