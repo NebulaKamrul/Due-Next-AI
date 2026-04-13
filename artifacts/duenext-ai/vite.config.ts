@@ -40,6 +40,12 @@ export default defineConfig({
   server: {
     port, host: "0.0.0.0", allowedHosts: true,
     fs: { strict: true, deny: ["**/.*"] },
+    proxy: {
+      "/api": {
+        target: `http://localhost:${Number(process.env.API_PORT ?? 3001)}`,
+        changeOrigin: true,
+      },
+    },
   },
   preview: { port, host: "0.0.0.0", allowedHosts: true },
 });
