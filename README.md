@@ -1,79 +1,63 @@
-# DueNext.ai
+# duenext.ai
 
-**DueNext.ai** is an AI-powered syllabus deadline extractor.
+> *no more scrolling through 40 pages of syllabus to find one due date.*
 
-Paste your syllabus or upload a PDF, and DueNext automatically extracts every assignment and due date,
-then exports everything to Google Calendar as an `.ics` file.
-
-Students no longer need to manually scan long syllabi or miss deadlines buried in course documents. 
+paste your syllabus. or upload the pdf. ai pulls every assignment, every deadline, every weight automatically. review it, edit it, and export straight to google calendar as an `.ics` file. built because i hated manually writing down my due dates in my google calendar.
 
 ---
 
-## Features
+## features
 
-- Paste syllabus text or upload a **PDF**
-- AI extracts **assignments, due dates, and weights automatically**
-- Edit assignment **titles, dates, types, colors, and weights**
-- **9 assignment types supported**
-  - Assignment
-  - Quiz
-  - Test
-  - Exam
-  - Midterm
-  - Final
-  - Practical
-  - Class Activity
-  - Other
-- Export directly to **Google Calendar** via `.ics`
-- **Dark mode support**
-- Smooth **premium UI animations** with Framer Motion
+- **paste or upload** - plain text or pdf, both work
+- **ai extraction** - assignments, dates, and weights pulled automatically
+- **edit everything** - title, date, type, color, weight
+- **9 assignment types** - assignment / quiz / test / exam / midterm / final / practical / class activity / other
+- **.ics export** - drops straight into google calendar
+- **dark mode** - obviously
 
 ---
 
-## Tech Stack
+## tech stack
 
-### Frontend
-- React + TypeScript
-- Vite
-- Tailwind CSS
-- Framer Motion
-
-### Backend
-- Express.js
-
-### AI + Parsing
-- OpenAI GPT-4o-mini
-- pdfjs-dist (PDF parsing)
-
-### Monorepo
-- pnpm
+| layer | tool |
+|---|---|
+| frontend | [React](https://react.dev) + TypeScript via [Vite](https://vitejs.dev) |
+| styling | [Tailwind CSS](https://tailwindcss.com) |
+| animations | [Framer Motion](https://www.framer.com/motion/) |
+| backend | Express.js |
+| ai | Gemini 2.5 Flash Lite |
+| pdf parsing | pdfjs-dist |
+| monorepo | pnpm |
 
 ---
 
-## Getting Started
+## get started
 
-### 1. Clone the repository
+### 1. clone the repo
 
 ```bash
-git clone https://github.com/yourusername/duenext-ai.git
-cd duenext-ai
+git clone https://github.com/NebulaKamrul/Due-Next-AI.git
+cd Due-Next-AI
 ```
 
-### 2. Install dependencies
+### 2. install dependencies
 
 ```bash
 pnpm install
 ```
 
-### 3. Set environment variables
+### 3. set environment variables
 
-Create a `.env` file and add:
+create a `.env` file and add:
 
 ```
-OPENAI_API_KEY=your_api_key_here
+OPENAI_API_KEY=your_gemini_key_here
+OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
 ```
 
-### 4. Run the development server
+the app uses google's gemini api through an openai-compatible endpoint, so you get gemini's model pointed at a standard openai-style interface. not sponsored but you can grab a free api key at [aistudio.google.com](https://aistudio.google.com).
+
+### 4. run the dev server
 
 ```bash
 pnpm run dev
@@ -81,22 +65,20 @@ pnpm run dev
 
 ---
 
-## How It Works
+## how it works
 
-1. Upload or paste a course syllabus
-2. AI extracts assignments and deadlines
-3. Review and edit extracted items
-4. Export everything as an `.ics` file
-5. Import into **Google Calendar**
-
----
-
-## Live Demo
-
-https://duenextai.replit.app/
+1. upload or paste your course syllabus
+2. ai extracts all the assignments and deadlines
+3. review and edit anything it got wrong
+4. export as an `.ics` file
+5. import into google calendar - done
 
 ---
 
-## Author
+built by **nebula kamrul**
 
-Built by **Nebula Kamrul**
+---
+
+## license
+
+[MIT](./LICENSE)
