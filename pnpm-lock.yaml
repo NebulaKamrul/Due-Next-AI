@@ -175,13 +175,6 @@ importers:
         version: 8.69.0(eslint@10.10.0(jiti@2.6.1))(typescript@5.9.3)
 
   api:
-    dependencies:
-      '@workspace/api-zod':
-        specifier: workspace:*
-        version: link:../lib/api-zod
-      '@workspace/integrations-openai-ai-server':
-        specifier: workspace:*
-        version: link:../lib/integrations-openai-ai-server
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

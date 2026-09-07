@@ -1,6 +1,11 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { ExtractDueDatesBody } from "@workspace/api-zod";
-import { extractDueDatesFromText, SyllabusExtractionError } from "@workspace/integrations-openai-ai-server";
+// Relative imports (not the `@workspace/*` package names) are used deliberately here:
+// this file is bundled by Vercel's serverless function builder, which resolves the
+// import graph by real file path. Going through the workspace package name would
+// route through a pnpm symlink to another package's raw TypeScript source, which is
+// an easy way to get inconsistent bundling behavior between environments.
+import { ExtractDueDatesBody } from "../../lib/api-zod/src/generated/api";
+import { extractDueDatesFromText, SyllabusExtractionError } from "../../lib/integrations-openai-ai-server/src/syllabus";
 import { getClientIp, isRateLimited } from "../_lib/rate-limit";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
