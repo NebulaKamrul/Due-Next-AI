@@ -1,13 +1,48 @@
-import { getClientIp, isRateLimited } from "../_lib/rate-limit";
+// This function is intentionally a single file with zero imports (no npm
+// packages, no other files in this repo) - it's the one file Vercel bundles
+// and deploys as a production serverless function in isolation, so it stays
+// as close as possible to plain Node built-ins to avoid any ambiguity in how
+// the deployment step handles cross-file references under /api. The local
+// Express dev server (artifacts/api-server) has the equivalent logic and is
+// free to import shared workspace packages normally, since it isn't deployed
+// this way.
 
-// This function is intentionally dependency-free (no npm packages, no imports
-// from other workspace packages) - it's the one file in this repo that Vercel
-// bundles and deploys as a production serverless function in isolation, so it
-// stays as close as possible to plain Node built-ins to avoid any ambiguity in
-// how the monorepo's package resolution interacts with that bundling step.
-// The local Express dev server (artifacts/api-server) has the equivalent logic
-// and is free to import shared workspace packages normally, since it isn't
-// bundled this way.
+// Best-effort per-IP rate limit. In-memory, so it only protects within a
+// single warm lambda instance - it resets on cold start and isn't shared
+// across concurrent instances. That's enough to blunt a naive retry loop or
+// script hitting one instance, but it is not a real defense against
+// distributed abuse. For that, put a shared store (e.g. Upstash Redis) behind
+// this instead.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 10;
+const rateLimitHits = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  for (const [key, entry] of rateLimitHits) {
+    if (entry.resetAt <= now) rateLimitHits.delete(key);
+  }
+
+  const entry = rateLimitHits.get(ip);
+  if (!entry || entry.resetAt <= now) {
+    rateLimitHits.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_MAX_REQUESTS;
+}
+
+function getClientIp(req: { headers: Record<string, string | string[] | undefined>; socket?: { remoteAddress?: string } }): string {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (typeof forwarded === "string" && forwarded.length > 0) {
+    return forwarded.split(",")[0].trim();
+  }
+  if (Array.isArray(forwarded) && forwarded.length > 0) {
+    return forwarded[0];
+  }
+  return req.socket?.remoteAddress ?? "unknown";
+}
 
 interface ExtractedAssignment {
   name: string;
