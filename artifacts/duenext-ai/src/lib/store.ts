@@ -2,22 +2,6 @@ import { Assignment } from "@workspace/api-client-react";
 
 const STORAGE_KEY = "duenext_results";
 
-export const CALENDAR_COLORS = [
-  { name: "Tomato", hex: "#D50000" },
-  { name: "Flamingo", hex: "#E67C73" },
-  { name: "Tangerine", hex: "#F4511E" },
-  { name: "Banana", hex: "#F6BF26" },
-  { name: "Sage", hex: "#33B679" },
-  { name: "Basil", hex: "#0B8043" },
-  { name: "Peacock", hex: "#039BE5" },
-  { name: "Blueberry", hex: "#3F51B5" },
-  { name: "Lavender", hex: "#7986CB" },
-  { name: "Grape", hex: "#8E24AA" },
-  { name: "Graphite", hex: "#616161" },
-] as const;
-
-export type CalendarColor = typeof CALENDAR_COLORS[number];
-
 export const ASSIGNMENT_TYPES = [
   { value: "assignment", label: "Assignment" },
   { value: "quiz", label: "Quiz" },
@@ -36,7 +20,6 @@ export interface EditableAssignment extends Assignment {
   dueTime?: string | null;
   activityTime?: string | null;
   type?: AssignmentType;
-  color?: string | null;
 }
 
 export interface StoredResults {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Plus, ArrowRight, Upload, Sparkles, CalendarRange, X, Pencil, Palette, Tag } from "lucide-react";
+import { Download, Plus, ArrowRight, Upload, Sparkles, CalendarRange, X, Pencil, Tag } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
@@ -71,24 +71,6 @@ export default function ResultsPage() {
     if (!results) return;
     const newAssignments = [...results.assignments];
     newAssignments[idx] = updated;
-    const newResults = { ...results, assignments: newAssignments };
-    setResults(newResults);
-    saveResults(newResults);
-  };
-
-  const handleApplyColorToAll = (color: string | null) => {
-    if (!results) return;
-    const newAssignments = results.assignments.map((a) => ({ ...a, color }));
-    const newResults = { ...results, assignments: newAssignments };
-    setResults(newResults);
-    saveResults(newResults);
-  };
-
-  const handleApplyColorToType = (color: string | null, type: string) => {
-    if (!results) return;
-    const newAssignments = results.assignments.map((a) =>
-      (a.type ?? "assignment") === type ? { ...a, color } : a
-    );
     const newResults = { ...results, assignments: newAssignments };
     setResults(newResults);
     saveResults(newResults);
@@ -193,7 +175,6 @@ export default function ResultsPage() {
                   <div className="flex flex-wrap gap-x-5 gap-y-1">
                     {[
                       { icon: Pencil, text: "Edit title, date & weight" },
-                      { icon: Palette, text: "Pick a color" },
                       { icon: Tag, text: "Set assignment type" },
                     ].map(({ icon: Icon, text }) => (
                       <span key={text} className="flex items-center gap-1.5 text-xs text-muted-foreground font-light">
@@ -232,8 +213,6 @@ export default function ResultsPage() {
                   <AssignmentCard
                     assignment={assignment}
                     onUpdate={(updated) => handleUpdateAssignment(idx, updated)}
-                    onApplyColorToAll={handleApplyColorToAll}
-                    onApplyColorToType={handleApplyColorToType}
                   />
                 </motion.div>
               ))}
