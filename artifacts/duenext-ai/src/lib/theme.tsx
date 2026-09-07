@@ -30,7 +30,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       localStorage.setItem("duenext_theme", theme);
-    } catch {}
+    } catch {
+      // ignore storage errors
+    }
   }, [theme]);
 
   const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));

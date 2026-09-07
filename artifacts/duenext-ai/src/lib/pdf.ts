@@ -27,6 +27,6 @@ export async function extractTextFromPDF(file: File): Promise<string> {
     return fullText;
   } catch (error) {
     console.error('Error extracting text from PDF:', error);
-    throw new Error('Failed to parse PDF. Please try copy-pasting the text instead.');
+    throw new Error('Failed to parse PDF. Please try copy-pasting the text instead.', { cause: error });
   }
 }

@@ -1,4 +1,4 @@
-import { Assignment } from "@workspace/api-client-react/src/generated/api.schemas";
+import { Assignment } from "@workspace/api-client-react";
 
 const STORAGE_KEY = "duenext_results";
 

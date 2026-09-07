@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, ArrowLeft, Plus, ArrowRight, Upload, Sparkles, CalendarRange, X, Pencil, Palette, Tag } from "lucide-react";
+import { Download, Plus, ArrowRight, Upload, Sparkles, CalendarRange, X, Pencil, Palette, Tag } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import { generateICS, downloadICS } from "@/lib/ics";
 import { loadResults, clearResults, saveResults, StoredResults, EditableAssignment } from "@/lib/store";
 
@@ -25,13 +24,12 @@ const itemVars = {
 };
 const headerVars = {
   hidden: { opacity: 0, y: -8 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", damping: 25, stiffness: 100 } },
+  show: { opacity: 1, y: 0, transition: { type: "spring", damping: 25, stiffness: 100 } as const },
 };
 
 export default function ResultsPage() {
   const [, navigate] = useLocation();
-  const { toast } = useToast();
-  const [results, setResults] = useState<StoredResults | null>(null);
+  const [results, setResults] = useState<StoredResults | null>(() => loadResults());
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [exportFilename, setExportFilename] = useState("");
   const [hasExported, setHasExported] = useState(false);
@@ -42,7 +40,6 @@ export default function ResultsPage() {
   });
 
   useEffect(() => {
-    setResults(loadResults());
     const t = setTimeout(() => setShowSuccess(false), 1800);
     return () => clearTimeout(t);
   }, []);

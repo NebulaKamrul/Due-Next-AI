@@ -1,8 +1,17 @@
 # duenext.ai
 
+[![CI](https://github.com/NebulaKamrul/Due-Next-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/NebulaKamrul/Due-Next-AI/actions/workflows/ci.yml)
+
 > *no more scrolling through 40 pages of syllabus to find one due date.*
 
 paste your syllabus. or upload the pdf. ai pulls every assignment, every deadline, every weight automatically. review it, edit it, and export straight to google calendar as an `.ics` file. built because i hated manually writing down my due dates in my google calendar.
+
+**[live demo →](https://due-next-ai.vercel.app)**
+
+<p align="center">
+  <img src=".github/assets/screenshot-light.png" alt="duenext.ai upload screen, light mode" width="49%" />
+  <img src=".github/assets/screenshot-dark.png" alt="duenext.ai upload screen, dark mode" width="49%" />
+</p>
 
 ---
 
@@ -62,6 +71,21 @@ the app uses google's gemini api through an openai-compatible endpoint, so you g
 ```bash
 pnpm run dev
 ```
+
+this starts the frontend at `localhost:5173` and the api at `localhost:3001` together.
+
+---
+
+## other scripts
+
+```bash
+pnpm run typecheck   # type-check every package
+pnpm run lint        # eslint across the repo
+pnpm run test        # unit tests
+pnpm run build       # typecheck + production build
+```
+
+all four run in CI on every push and PR to `master`.
 
 ---
 
