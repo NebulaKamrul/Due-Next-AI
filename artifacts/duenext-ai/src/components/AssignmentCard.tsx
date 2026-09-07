@@ -121,7 +121,10 @@ export function AssignmentCard({ assignment, onUpdate, onApplyColorToAll, onAppl
         </div>
 
         <div>
-          <label className="text-[11px] text-muted-foreground/70 mb-2 block uppercase tracking-wider font-medium">Calendar Color</label>
+          <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Color tag</label>
+          <p className="text-xs text-muted-foreground/60 mb-2 font-light">
+            For organizing here — most calendar apps color events by which calendar you import into, not per event, so this may not carry over.
+          </p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
