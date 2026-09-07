@@ -1,16 +1,13 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import OpenAI from "openai";
-import pRetry, { AbortError } from "p-retry";
 import { getClientIp, isRateLimited } from "../_lib/rate-limit";
 
-// This function is intentionally self-contained (only npm packages, no imports
-// from other workspace packages). It's bundled in isolation by Vercel's
-// serverless function builder, and importing another workspace package here
-// means resolving through a pnpm symlink to that package's raw TypeScript
-// source - a rough edge for serverless bundlers that isn't worth the risk for
-// one function. The local Express dev server (artifacts/api-server) has the
-// equivalent logic and is free to share code normally since it isn't bundled
-// this way.
+// This function is intentionally dependency-free (no npm packages, no imports
+// from other workspace packages) - it's the one file in this repo that Vercel
+// bundles and deploys as a production serverless function in isolation, so it
+// stays as close as possible to plain Node built-ins to avoid any ambiguity in
+// how the monorepo's package resolution interacts with that bundling step.
+// The local Express dev server (artifacts/api-server) has the equivalent logic
+// and is free to import shared workspace packages normally, since it isn't
+// bundled this way.
 
 interface ExtractedAssignment {
   name: string;
@@ -22,6 +19,7 @@ interface ExtractedAssignment {
 const MAX_INPUT_CHARS = 12000;
 const MODEL = "gemini-2.5-flash-lite";
 const MAX_COMPLETION_TOKENS = 8192;
+const MAX_ATTEMPTS = 2;
 
 function buildSystemPrompt(currentYear: number): string {
   return `You are an AI assistant that extracts assignment due dates from course syllabi.
@@ -56,11 +54,6 @@ function isValidISODate(value: string): boolean {
   return !Number.isNaN(new Date(`${value}T00:00:00Z`).getTime());
 }
 
-function isRetryableError(err: unknown): boolean {
-  const status = (err as { status?: number } | null)?.status;
-  return status === undefined || status === 429 || status >= 500;
-}
-
 function isPlainAssignment(value: unknown): value is { name: string; dueDate: string; weight?: string | null; description?: string | null } {
   if (!value || typeof value !== "object") return false;
   const a = value as Record<string, unknown>;
@@ -77,13 +70,17 @@ function parseModelJson(rawContent: string): { courseName?: string | null; assig
   }
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
-  const baseURL = process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1";
+  const baseURL = (process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1").replace(/\/+$/, "");
 
   if (!apiKey) {
     return res.status(500).json({ error: "API key not configured." });
@@ -104,13 +101,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const truncated = trimmed.length > MAX_INPUT_CHARS;
   const content = trimmed.slice(0, MAX_INPUT_CHARS);
 
-  const openai = new OpenAI({ apiKey, baseURL });
-
-  let completion;
-  try {
-    completion = await pRetry(
-      () =>
-        openai.chat.completions.create({
+  let response: Response | undefined;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      response = await fetch(`${baseURL}/chat/completions`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           model: MODEL,
           max_completion_tokens: MAX_COMPLETION_TOKENS,
           messages: [
@@ -123,22 +123,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             },
           ],
         }),
-      {
-        retries: 1,
-        minTimeout: 500,
-        maxTimeout: 2000,
-        factor: 2,
-        onFailedAttempt: ({ error }) => {
-          if (!isRetryableError(error)) throw new AbortError(error);
-        },
-      },
-    );
-  } catch (err) {
-    console.error("Gemini API error:", err);
+      });
+    } catch (err) {
+      console.error("Gemini API network error:", err);
+      response = undefined;
+    }
+
+    if (response?.ok) break;
+    if (response && response.status !== 429 && response.status < 500) break;
+    if (attempt < MAX_ATTEMPTS) await sleep(500 * attempt);
+  }
+
+  if (!response || !response.ok) {
+    const errBody = response ? await response.text().catch(() => "") : "";
+    console.error("Gemini API error:", response?.status, errBody);
     return res.status(502).json({ error: "Failed to extract due dates. Please try again." });
   }
 
-  const rawContent = completion.choices[0]?.message?.content ?? "{}";
+  const data = await response.json();
+  const rawContent = data.choices?.[0]?.message?.content ?? "{}";
 
   let parsed: { courseName?: string | null; assignments?: unknown[] };
   try {
