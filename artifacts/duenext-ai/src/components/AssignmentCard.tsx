@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { format, parseISO, isValid } from "date-fns";
-import { Pencil, Check, X } from "lucide-react";
+import { Pencil, Check, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EditableAssignment, ASSIGNMENT_TYPES, AssignmentType } from "@/lib/store";
 
 interface AssignmentCardProps {
   assignment: EditableAssignment;
+  startEditing?: boolean;
   onUpdate?: (updated: EditableAssignment) => void;
+  onDelete?: () => void;
 }
 
-export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
-  const [editing, setEditing] = useState(false);
+export function AssignmentCard({ assignment, startEditing, onUpdate, onDelete }: AssignmentCardProps) {
+  const [editing, setEditing] = useState(startEditing ?? false);
   const [draft, setDraft] = useState({ ...assignment });
 
   let formattedDate = assignment.dueDate;
@@ -121,6 +123,12 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
             <X className="w-3.5 h-3.5 mr-1.5" />
             Cancel
           </Button>
+          {onDelete && (
+            <Button size="sm" variant="ghost" onClick={onDelete} className="ml-auto text-destructive hover:text-destructive">
+              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+              Delete
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -183,6 +191,16 @@ export function AssignmentCard({ assignment, onUpdate }: AssignmentCardProps) {
               onClick={startEdit}
             >
               <Pencil className="w-3.5 h-3.5" />
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+              onClick={onDelete}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
             </Button>
           )}
         </div>

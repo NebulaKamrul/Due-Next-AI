@@ -38,6 +38,7 @@ export default function ResultsPage() {
   const [showTip, setShowTip] = useState(() => {
     return localStorage.getItem("duenext_tip_dismissed") !== "true";
   });
+  const [justAddedIndex, setJustAddedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setShowSuccess(false), 1800);
@@ -74,6 +75,33 @@ export default function ResultsPage() {
     const newResults = { ...results, assignments: newAssignments };
     setResults(newResults);
     saveResults(newResults);
+    if (justAddedIndex === idx) setJustAddedIndex(null);
+  };
+
+  const handleAddAssignment = () => {
+    const newAssignment: EditableAssignment = {
+      name: "",
+      dueDate: new Date().toISOString().slice(0, 10),
+      weight: null,
+      description: null,
+      type: "assignment",
+    };
+    const base: StoredResults = results ?? { assignments: [], courseName: null };
+    const newAssignments = [...base.assignments, newAssignment];
+    const newResults = { ...base, assignments: newAssignments };
+    setResults(newResults);
+    saveResults(newResults);
+    setJustAddedIndex(newAssignments.length - 1);
+    setShowSuccess(false);
+  };
+
+  const handleDeleteAssignment = (idx: number) => {
+    if (!results) return;
+    const newAssignments = results.assignments.filter((_, i) => i !== idx);
+    const newResults = { ...results, assignments: newAssignments };
+    setResults(newResults);
+    saveResults(newResults);
+    if (justAddedIndex === idx) setJustAddedIndex(null);
   };
 
   const handleClear = () => {
@@ -144,6 +172,10 @@ export default function ResultsPage() {
               <Button variant="ghost" onClick={handleClear} className="text-muted-foreground">
                 Clear
               </Button>
+              <Button variant="outline" onClick={handleAddAssignment}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add
+              </Button>
               <motion.div
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -212,7 +244,9 @@ export default function ResultsPage() {
                 <motion.div key={`${assignment.name}-${idx}`} variants={itemVars} className="bg-background">
                   <AssignmentCard
                     assignment={assignment}
+                    startEditing={idx === justAddedIndex}
                     onUpdate={(updated) => handleUpdateAssignment(idx, updated)}
+                    onDelete={() => handleDeleteAssignment(idx)}
                   />
                 </motion.div>
               ))}
@@ -260,10 +294,15 @@ export default function ResultsPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
+                className="flex flex-col items-center gap-3"
               >
                 <Button onClick={() => navigate("/")} size="lg" className="gap-2">
                   <Upload className="w-4 h-4" />
                   Upload a Syllabus
+                </Button>
+                <Button onClick={handleAddAssignment} variant="ghost" size="sm" className="text-muted-foreground gap-1.5">
+                  <Plus className="w-3.5 h-3.5" />
+                  or add one manually
                 </Button>
               </motion.div>
             </motion.div>
