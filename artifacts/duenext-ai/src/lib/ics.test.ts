@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateICS } from "./ics";
+import { generateICS, buildGoogleCalendarUrl } from "./ics";
 import type { EditableAssignment } from "./store";
 
 function assignment(overrides: Partial<EditableAssignment> = {}): EditableAssignment {
@@ -61,6 +61,12 @@ describe("generateICS", () => {
     expect(ics).toContain("Bring calculator");
   });
 
+  it("single-escapes the newline between the weight line and the description", () => {
+    const ics = generateICS([assignment({ weight: "20%", description: "Bring calculator" })]);
+    expect(ics).toContain("DESCRIPTION:Weight: 20%\\n\\nBring calculator");
+    expect(ics).not.toContain("\\\\n");
+  });
+
   it("gives each event a unique UID", () => {
     const ics = generateICS([assignment({ name: "A" }), assignment({ name: "B", dueDate: "2026-09-11" })]);
     const uids = [...ics.matchAll(/UID:([^\n]+)/g)].map((m) => m[1]);
@@ -77,5 +83,36 @@ describe("generateICS", () => {
   it("adds a 30-minute-before reminder for timed events", () => {
     const ics = generateICS([assignment({ dueDate: "2026-09-10", dueTime: "14:30" })]);
     expect(ics).toContain("TRIGGER:-PT30M");
+  });
+});
+
+describe("buildGoogleCalendarUrl", () => {
+  it("returns null when there is no due date", () => {
+    expect(buildGoogleCalendarUrl(assignment({ dueDate: "" }))).toBeNull();
+  });
+
+  it("points at the Google Calendar render endpoint with a TEMPLATE action", () => {
+    const url = buildGoogleCalendarUrl(assignment());
+    expect(url).toContain("https://calendar.google.com/calendar/render?");
+    expect(url).toContain("action=TEMPLATE");
+  });
+
+  it("encodes the course-prefixed title and the all-day date range", () => {
+    const url = buildGoogleCalendarUrl(assignment({ name: "Essay", dueDate: "2026-09-10", courseName: "ENGL 101" }));
+    const params = new URL(url!).searchParams;
+    expect(params.get("text")).toBe("ENGL 101: Essay");
+    expect(params.get("dates")).toBe("20260910/20260911");
+  });
+
+  it("encodes a timed date range when dueTime is set", () => {
+    const url = buildGoogleCalendarUrl(assignment({ dueDate: "2026-09-10", dueTime: "14:30" }));
+    const params = new URL(url!).searchParams;
+    expect(params.get("dates")).toBe("20260910T143000/20260910T153000");
+  });
+
+  it("includes the weight in the details param", () => {
+    const url = buildGoogleCalendarUrl(assignment({ weight: "20%" }));
+    const params = new URL(url!).searchParams;
+    expect(params.get("details")).toContain("Weight: 20%");
   });
 });

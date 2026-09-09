@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { format, parseISO, isValid } from "date-fns";
-import { Pencil, Check, X, Trash2, AlertTriangle } from "lucide-react";
+import { Pencil, Check, X, Trash2, AlertTriangle, CalendarPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EditableAssignment, ASSIGNMENT_TYPES, AssignmentType } from "@/lib/store";
+import { buildGoogleCalendarUrl } from "@/lib/ics";
 
 interface AssignmentCardProps {
   assignment: EditableAssignment;
@@ -146,6 +147,7 @@ export function AssignmentCard({ assignment, startEditing, onUpdate, onDelete }:
   const assignmentType = assignment.type ?? "assignment";
   const typeInfo = ASSIGNMENT_TYPES.find((t) => t.value === assignmentType);
   const typeLabel = typeInfo?.label ?? "Assignment";
+  const googleCalendarUrl = buildGoogleCalendarUrl(assignment);
 
   return (
     <div className={`flex flex-col p-5 group glass-card rounded-lg ${assignment.needsReview ? "bg-amber-500/5 ring-1 ring-inset ring-amber-500/30" : ""}`}>
@@ -215,6 +217,19 @@ export function AssignmentCard({ assignment, startEditing, onUpdate, onDelete }:
             >
               <Check className="w-3.5 h-3.5 mr-1" />
               Looks right
+            </Button>
+          )}
+          {googleCalendarUrl && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground"
+              title="Add to Google Calendar"
+              asChild
+            >
+              <a href={googleCalendarUrl} target="_blank" rel="noopener noreferrer">
+                <CalendarPlus className="w-3.5 h-3.5" />
+              </a>
             </Button>
           )}
           {onUpdate && (
