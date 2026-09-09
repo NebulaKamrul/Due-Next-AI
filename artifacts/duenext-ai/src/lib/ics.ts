@@ -1,17 +1,17 @@
 import { EditableAssignment } from "@/lib/store";
 
-export function generateICS(assignments: EditableAssignment[], courseName?: string | null): string {
+export function generateICS(assignments: EditableAssignment[]): string {
   let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//DueNext AI//EN\nCALSCALE:GREGORIAN\n";
-  
+
   const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
   assignments.forEach((assignment, index) => {
     if (!assignment.dueDate) return;
-    
-    const summary = courseName 
-      ? `${courseName}: ${assignment.name}` 
+
+    const summary = assignment.courseName
+      ? `${assignment.courseName}: ${assignment.name}`
       : assignment.name;
-      
+
     let description = assignment.description || "";
     if (assignment.weight) {
       description = `Weight: ${assignment.weight}\\n\\n${description}`;
@@ -50,6 +50,11 @@ export function generateICS(assignments: EditableAssignment[], courseName?: stri
     if (description) {
       ics += `DESCRIPTION:${escapeICSString(description)}\n`;
     }
+    ics += "BEGIN:VALARM\n";
+    ics += "ACTION:DISPLAY\n";
+    ics += `DESCRIPTION:${escapeICSString(summary)}\n`;
+    ics += `TRIGGER:${timeToUse ? "-PT30M" : "-P1D"}\n`;
+    ics += "END:VALARM\n";
     ics += "END:VEVENT\n";
   });
   

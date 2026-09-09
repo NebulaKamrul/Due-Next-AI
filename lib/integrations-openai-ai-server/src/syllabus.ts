@@ -6,6 +6,8 @@ export interface ExtractedAssignment {
   dueDate: string;
   weight?: string | null;
   description?: string | null;
+  needsReview?: boolean;
+  dateHint?: string | null;
 }
 
 export interface ExtractedSyllabus {
@@ -40,19 +42,23 @@ Return a JSON object with this exact structure:
       "name": "Assignment name",
       "dueDate": "YYYY-MM-DD format",
       "weight": "percentage or points if mentioned, or null",
-      "description": "brief additional context if useful, or null"
+      "description": "brief additional context if useful, or null",
+      "needsReview": true or false,
+      "dateHint": "the original ambiguous date text, or null"
     }
   ]
 }
 
 Rules:
-- Only include items with a clear, resolvable due date. If a date cannot be determined with reasonable confidence (e.g. only "Week 5" with no calendar reference anywhere in the text), omit that item rather than guessing.
+- Include every graded item mentioned - quizzes, exams, homework, projects, papers, presentations, participation, all of it. Do not skip items just because the date is unclear.
+- When a date is explicit and unambiguous (e.g. "October 20, 2026" or "10/20"), convert it to YYYY-MM-DD and set "needsReview": false.
+- When a date is vague (e.g. "Week 5", "TBD", "mid-semester", a date range), make your best estimate using any other anchors in the text (term start date, other dated assignments, weekday patterns), still return a real YYYY-MM-DD date, but set "needsReview": true and put the original text verbatim in "dateHint" (e.g. "Week 5"). Never leave dueDate blank.
+- Only omit an item entirely if there is truly no date information anywhere for it (not even a rough week or term reference) and no way to estimate one.
 - Convert all dates to YYYY-MM-DD format, using 4-digit years.
 - If a year is not specified, infer it from context (term dates, weekday/date pairs, other assignment years already present). If nothing anchors the year, assume the current academic year (${currentYear} or ${currentYear + 1} depending on whether the syllabus reads as a fall/winter/spring/summer term).
 - The same assignment is often mentioned more than once (e.g. once in a grading table, again in a weekly schedule). List it only once, using the most specific date given.
 - Normalize weight to a short string like "15%" or "20 pts" when mentioned; use null when no weight is given.
 - Sort assignments chronologically by dueDate.
-- Be comprehensive - include all quizzes, exams, homework, projects, papers, presentations, participation deadlines, and other graded milestones.
 - Return valid JSON only, no markdown, no explanation, no trailing commas.`;
 }
 
@@ -113,7 +119,9 @@ function parseModelJson(rawContent: string): { courseName?: string | null; assig
   }
 }
 
-function isPlainAssignment(value: unknown): value is { name: string; dueDate: string; weight?: string | null; description?: string | null } {
+function isPlainAssignment(
+  value: unknown,
+): value is { name: string; dueDate: string; weight?: string | null; description?: string | null; needsReview?: unknown; dateHint?: unknown } {
   if (!value || typeof value !== "object") return false;
   const a = value as Record<string, unknown>;
   return typeof a.name === "string" && a.name.trim().length > 0 && typeof a.dueDate === "string" && isValidISODate(a.dueDate);
@@ -145,6 +153,8 @@ export async function extractDueDatesFromText(rawText: string): Promise<Extracte
       dueDate: a.dueDate,
       weight: a.weight ?? null,
       description: a.description ?? null,
+      needsReview: a.needsReview === true,
+      dateHint: typeof a.dateHint === "string" ? a.dateHint : null,
     }))
     .filter((a) => {
       const key = `${a.name.toLowerCase()}|${a.dueDate}`;

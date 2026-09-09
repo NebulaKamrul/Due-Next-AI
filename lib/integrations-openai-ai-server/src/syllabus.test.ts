@@ -54,7 +54,7 @@ describe("extractDueDatesFromText", () => {
 
     const result = await extractDueDatesFromText("Quiz 1 is on September 15th, worth nothing else matters here");
     expect(result.assignments).toEqual([
-      { name: "Quiz 1", dueDate: "2026-09-15", weight: null, description: null },
+      { name: "Quiz 1", dueDate: "2026-09-15", weight: null, description: null, needsReview: false, dateHint: null },
     ]);
   });
 
@@ -73,7 +73,26 @@ describe("extractDueDatesFromText", () => {
     );
 
     const result = await extractDueDatesFromText("A syllabus with some malformed model output mixed in");
-    expect(result.assignments).toEqual([{ name: "Valid", dueDate: "2026-11-01", weight: null, description: null }]);
+    expect(result.assignments).toEqual([
+      { name: "Valid", dueDate: "2026-11-01", weight: null, description: null, needsReview: false, dateHint: null },
+    ]);
+  });
+
+  it("carries through needsReview and dateHint for estimated dates", async () => {
+    createMock.mockResolvedValueOnce(
+      completionWith(
+        JSON.stringify({
+          assignments: [
+            { name: "Reading Response", dueDate: "2026-10-15", needsReview: true, dateHint: "Week 5" },
+            { name: "Quiz 1", dueDate: "2026-09-15", needsReview: false },
+          ],
+        }),
+      ),
+    );
+
+    const result = await extractDueDatesFromText("Reading response due Week 5. Quiz 1 on September 15th.");
+    expect(result.assignments[0]).toMatchObject({ name: "Quiz 1", needsReview: false, dateHint: null });
+    expect(result.assignments[1]).toMatchObject({ name: "Reading Response", needsReview: true, dateHint: "Week 5" });
   });
 
   it("deduplicates the same assignment mentioned twice", async () => {

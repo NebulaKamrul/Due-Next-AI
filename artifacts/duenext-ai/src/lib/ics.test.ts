@@ -26,8 +26,8 @@ describe("generateICS", () => {
     expect(ics).not.toContain("BEGIN:VEVENT");
   });
 
-  it("prefixes the summary with the course name when provided", () => {
-    const ics = generateICS([assignment({ name: "Essay" })], "ENGL 101");
+  it("prefixes the summary with the assignment's course name when provided", () => {
+    const ics = generateICS([assignment({ name: "Essay", courseName: "ENGL 101" })]);
     expect(ics).toContain("SUMMARY:ENGL 101: Essay");
   });
 
@@ -65,5 +65,17 @@ describe("generateICS", () => {
     const ics = generateICS([assignment({ name: "A" }), assignment({ name: "B", dueDate: "2026-09-11" })]);
     const uids = [...ics.matchAll(/UID:([^\n]+)/g)].map((m) => m[1]);
     expect(new Set(uids).size).toBe(2);
+  });
+
+  it("adds a 1-day-before reminder for all-day events", () => {
+    const ics = generateICS([assignment({ dueDate: "2026-09-10" })]);
+    expect(ics).toContain("BEGIN:VALARM");
+    expect(ics).toContain("TRIGGER:-P1D");
+    expect(ics).toContain("END:VALARM");
+  });
+
+  it("adds a 30-minute-before reminder for timed events", () => {
+    const ics = generateICS([assignment({ dueDate: "2026-09-10", dueTime: "14:30" })]);
+    expect(ics).toContain("TRIGGER:-PT30M");
   });
 });

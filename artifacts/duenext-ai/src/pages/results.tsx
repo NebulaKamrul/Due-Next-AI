@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Plus, ArrowRight, Upload, Sparkles, CalendarRange, X, Pencil, Tag } from "lucide-react";
+import { Download, Plus, ArrowRight, Upload, Sparkles, CalendarRange, X, Pencil, Tag, AlertTriangle } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { AssignmentCard } from "@/components/AssignmentCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { generateICS, downloadICS } from "@/lib/ics";
-import { loadResults, clearResults, saveResults, StoredResults, EditableAssignment } from "@/lib/store";
+import { loadResults, clearResults, saveResults, uniqueCourseNames, StoredResults, EditableAssignment } from "@/lib/store";
 
 const containerVars = {
   hidden: { opacity: 0 },
@@ -45,9 +45,11 @@ export default function ResultsPage() {
     return () => clearTimeout(t);
   }, []);
 
+  const courses = results ? uniqueCourseNames(results.assignments) : [];
+
   const defaultFilename = () => {
-    if (results?.courseName) {
-      return `${results.courseName.toLowerCase().replace(/\s+/g, "-")}-assignments`;
+    if (courses.length === 1) {
+      return `${courses[0].toLowerCase().replace(/\s+/g, "-")}-assignments`;
     }
     return "syllabus-assignments";
   };
@@ -59,7 +61,7 @@ export default function ResultsPage() {
 
   const confirmExport = () => {
     if (!results || results.assignments.length === 0) return;
-    const icsString = generateICS(results.assignments, results.courseName);
+    const icsString = generateICS(results.assignments);
     const name = exportFilename.trim() || defaultFilename();
     const filename = name.endsWith(".ics") ? name : `${name}.ics`;
     downloadICS(icsString, filename);
@@ -86,7 +88,7 @@ export default function ResultsPage() {
       description: null,
       type: "assignment",
     };
-    const base: StoredResults = results ?? { assignments: [], courseName: null };
+    const base: StoredResults = results ?? { assignments: [] };
     const newAssignments = [...base.assignments, newAssignment];
     const newResults = { ...base, assignments: newAssignments };
     setResults(newResults);
@@ -110,6 +112,7 @@ export default function ResultsPage() {
   };
 
   const hasResults = results && results.assignments.length > 0;
+  const needsReviewCount = results?.assignments.filter((a) => a.needsReview).length ?? 0;
 
   return (
     <Layout>
@@ -154,12 +157,12 @@ export default function ResultsPage() {
             </div>
             {hasResults && (
               <div className="flex items-center gap-3 pt-1">
-                {results?.courseName && (
+                {courses.length > 0 && (
                   <span className="text-sm font-medium text-foreground">
-                    {results.courseName}
+                    {courses.length === 1 ? courses[0] : `${courses.length} courses`}
                   </span>
                 )}
-                {results?.courseName && <span className="text-muted-foreground">&middot;</span>}
+                {courses.length > 0 && <span className="text-muted-foreground">&middot;</span>}
                 <span className="text-sm text-muted-foreground font-light">
                   {results.assignments.length} {results.assignments.length === 1 ? "deadline" : "deadlines"} extracted
                 </span>
@@ -225,6 +228,29 @@ export default function ResultsPage() {
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {needsReviewCount > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 120 }}
+              className="overflow-hidden"
+            >
+              <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-4 flex items-start gap-3">
+                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <p className="text-sm text-foreground">
+                  <span className="font-medium">
+                    {needsReviewCount} {needsReviewCount === 1 ? "date wasn't" : "dates weren't"} clearly stated
+                  </span>{" "}
+                  in the syllabus, so I estimated {needsReviewCount === 1 ? "it" : "them"} - check the highlighted{" "}
+                  {needsReviewCount === 1 ? "one" : "ones"} below and confirm or fix the date.
+                </p>
               </div>
             </motion.div>
           )}

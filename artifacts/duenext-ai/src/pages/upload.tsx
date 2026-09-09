@@ -6,7 +6,7 @@ import { CalendarRange, BookOpen, Clock, Sparkles, FileText } from "lucide-react
 import { Layout } from "@/components/Layout";
 import { SyllabusForm } from "@/components/SyllabusForm";
 import { useToast } from "@/hooks/use-toast";
-import { saveResults } from "@/lib/store";
+import { loadResults, mergeAssignments, saveResults } from "@/lib/store";
 
 function TypeWriter({ text, delay = 0, className = "" }: { text: string; delay?: number; className?: string }) {
   const [displayed, setDisplayed] = useState("");
@@ -158,10 +158,13 @@ export default function UploadPage() {
   const extractMutation = useExtractDueDates({
     mutation: {
       onSuccess: (data) => {
-        const sorted = [...data.assignments].sort((a, b) =>
+        const tagged = data.assignments.map((a) => ({ ...a, courseName: data.courseName ?? null }));
+        const existing = loadResults()?.assignments ?? [];
+        const merged = mergeAssignments(existing, tagged);
+        const sorted = [...merged].sort((a, b) =>
           new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
         );
-        saveResults({ assignments: sorted, courseName: data.courseName ?? null });
+        saveResults({ assignments: sorted });
         navigate("/results");
       },
       onError: (error) => {

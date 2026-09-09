@@ -20,11 +20,34 @@ export interface EditableAssignment extends Assignment {
   dueTime?: string | null;
   activityTime?: string | null;
   type?: AssignmentType;
+  courseName?: string | null;
 }
 
 export interface StoredResults {
   assignments: EditableAssignment[];
-  courseName: string | null;
+}
+
+/**
+ * Merges newly extracted assignments into an existing list, so uploading a
+ * second syllabus adds to your deadlines instead of wiping out the first
+ * course. Dedupes on name + date + course, since re-uploading the same
+ * syllabus (or a syllabus update) shouldn't create duplicates.
+ */
+export function mergeAssignments(existing: EditableAssignment[], incoming: EditableAssignment[]): EditableAssignment[] {
+  const key = (a: EditableAssignment) => `${(a.courseName ?? "").toLowerCase()}|${a.name.trim().toLowerCase()}|${a.dueDate}`;
+  const seen = new Set(existing.map(key));
+  const merged = [...existing];
+  for (const assignment of incoming) {
+    const k = key(assignment);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    merged.push(assignment);
+  }
+  return merged;
+}
+
+export function uniqueCourseNames(assignments: EditableAssignment[]): string[] {
+  return [...new Set(assignments.map((a) => a.courseName).filter((c): c is string => !!c))];
 }
 
 export function saveResults(data: StoredResults) {

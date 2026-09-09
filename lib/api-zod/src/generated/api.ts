@@ -29,7 +29,9 @@ export const ExtractDueDatesResponse = zod.object({
       name: zod.string().describe("Name of the assignment"),
       dueDate: zod
         .string()
-        .describe("Due date in ISO 8601 format (YYYY-MM-DD)"),
+        .describe(
+          "Due date in ISO 8601 format (YYYY-MM-DD). When needsReview is true, this is the model's best estimate, not a confirmed date.",
+        ),
       weight: zod
         .string()
         .nullish()
@@ -38,6 +40,18 @@ export const ExtractDueDatesResponse = zod.object({
         .string()
         .nullish()
         .describe("Optional additional details about the assignment"),
+      needsReview: zod
+        .boolean()
+        .optional()
+        .describe(
+          "True when the model could not confidently determine the exact due date and estimated it instead - the user should confirm or correct it.",
+        ),
+      dateHint: zod
+        .string()
+        .nullish()
+        .describe(
+          'The original, ambiguous date text from the syllabus (e.g. \"Week 5\"), present when needsReview is true.',
+        ),
     }),
   ),
   courseName: zod.string().nullish().describe("Course name if detected"),

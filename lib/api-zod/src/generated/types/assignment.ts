@@ -9,10 +9,14 @@
 export interface Assignment {
   /** Name of the assignment */
   name: string;
-  /** Due date in ISO 8601 format (YYYY-MM-DD) */
+  /** Due date in ISO 8601 format (YYYY-MM-DD). When needsReview is true, this is the model's best estimate, not a confirmed date. */
   dueDate: string;
   /** Grading weight or percentage if available */
   weight?: string | null;
   /** Optional additional details about the assignment */
   description?: string | null;
+  /** True when the model could not confidently determine the exact due date and estimated it instead - the user should confirm or correct it. */
+  needsReview?: boolean;
+  /** The original, ambiguous date text from the syllabus (e.g. "Week 5"), present when needsReview is true. */
+  dateHint?: string | null;
 }

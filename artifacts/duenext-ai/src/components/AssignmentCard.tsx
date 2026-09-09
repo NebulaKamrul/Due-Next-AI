@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format, parseISO, isValid } from "date-fns";
-import { Pencil, Check, X, Trash2 } from "lucide-react";
+import { Pencil, Check, X, Trash2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EditableAssignment, ASSIGNMENT_TYPES, AssignmentType } from "@/lib/store";
@@ -45,6 +45,15 @@ export function AssignmentCard({ assignment, startEditing, onUpdate, onDelete }:
   if (editing) {
     return (
       <div className="flex flex-col gap-3 p-5">
+        <div className="w-full sm:w-64">
+          <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Course</label>
+          <Input
+            value={draft.courseName ?? ""}
+            onChange={(e) => setDraft({ ...draft, courseName: e.target.value || null })}
+            placeholder="e.g. CS 101"
+          />
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
             <label className="text-[11px] text-muted-foreground/70 mb-1 block uppercase tracking-wider font-medium">Name</label>
@@ -139,11 +148,16 @@ export function AssignmentCard({ assignment, startEditing, onUpdate, onDelete }:
   const typeLabel = typeInfo?.label ?? "Assignment";
 
   return (
-    <div className="flex flex-col p-5 group glass-card rounded-lg">
+    <div className={`flex flex-col p-5 group glass-card rounded-lg ${assignment.needsReview ? "bg-amber-500/5 ring-1 ring-inset ring-amber-500/30" : ""}`}>
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="flex-1 flex gap-3">
           <div>
-            <div className="flex items-center gap-3 mb-1">
+            {assignment.courseName && (
+              <p className="text-xs text-muted-foreground/70 font-medium uppercase tracking-wider mb-0.5">
+                {assignment.courseName}
+              </p>
+            )}
+            <div className="flex items-center gap-3 mb-1 flex-wrap">
               <h3 className="text-base font-medium text-foreground">
                 {assignment.name}
               </h3>
@@ -155,6 +169,15 @@ export function AssignmentCard({ assignment, startEditing, onUpdate, onDelete }:
               {assignment.weight && (
                 <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                   {assignment.weight}
+                </span>
+              )}
+              {assignment.needsReview && (
+                <span
+                  className="text-xs font-medium text-amber-700 dark:text-amber-400 bg-amber-500/15 px-1.5 py-0.5 rounded flex items-center gap-1"
+                  title={assignment.dateHint ? `Estimated from: "${assignment.dateHint}"` : "This date is an estimate"}
+                >
+                  <AlertTriangle className="w-3 h-3" />
+                  Unconfirmed date{assignment.dateHint ? ` (${assignment.dateHint})` : ""}
                 </span>
               )}
             </div>
@@ -183,6 +206,17 @@ export function AssignmentCard({ assignment, startEditing, onUpdate, onDelete }:
               </p>
             )}
           </div>
+          {assignment.needsReview && onUpdate && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs px-2.5 border-amber-500/40 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10"
+              onClick={() => onUpdate({ ...assignment, needsReview: false })}
+            >
+              <Check className="w-3.5 h-3.5 mr-1" />
+              Looks right
+            </Button>
+          )}
           {onUpdate && (
             <Button
               size="icon"
